@@ -1,5 +1,6 @@
 package com.expert.testes.controllers;
 
+import com.expert.testes.DTOs.CategoryDTO;
 import com.expert.testes.entities.Category;
 import com.expert.testes.services.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -20,12 +21,12 @@ public class CategoryController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Category> findAll() {
+    public List<CategoryDTO> findAll() {
         log.info("REQUEST - GET [findAll]");
 
-        List<Category> categories = service.findAll();
+        List<CategoryDTO> categoryDTOs = service.findAll();
 
         log.info("RESPONSE - GET [findAll]");
-        return categories;
+        return categoryDTOs;
     }
 }

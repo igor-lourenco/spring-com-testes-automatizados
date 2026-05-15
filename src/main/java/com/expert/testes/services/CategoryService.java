@@ -1,5 +1,6 @@
 package com.expert.testes.services;
 
+import com.expert.testes.DTOs.CategoryDTO;
 import com.expert.testes.entities.Category;
 import com.expert.testes.repositories.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +19,10 @@ public class CategoryService {
 
 
     @Transactional(readOnly = true)
-    public List<Category> findAll() {
-        return repository.findAll();
+    public List<CategoryDTO> findAll() {
+        return repository.findAll().stream()
+            .map(CategoryDTO::new)
+            .toList();
     }
 
 }
