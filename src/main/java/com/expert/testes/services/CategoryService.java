@@ -3,6 +3,7 @@ package com.expert.testes.services;
 import com.expert.testes.DTOs.CategoryDTO;
 import com.expert.testes.entities.Category;
 import com.expert.testes.repositories.CategoryRepository;
+import com.expert.testes.services.exceptions.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,6 @@ public class CategoryService {
 
     private Category findCategoryById(Long id) {
         return repository.findById(id).orElseThrow(() ->
-            new RuntimeException("Category não encontrado: " + id));
+            new EntityNotFoundException("Category não encontrado: " + id));
     }
 }
