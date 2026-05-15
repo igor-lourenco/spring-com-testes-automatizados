@@ -25,4 +25,16 @@ public class CategoryService {
             .toList();
     }
 
+
+    @Transactional(readOnly = true)
+    public CategoryDTO findById(Long id) {
+        Category category = findCategoryById(id);
+        return new CategoryDTO(category);
+    }
+
+
+    private Category findCategoryById(Long id) {
+        return repository.findById(id).orElseThrow(() ->
+            new RuntimeException("Category não encontrado: " + id));
+    }
 }

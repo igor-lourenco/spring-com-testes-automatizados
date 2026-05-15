@@ -29,4 +29,16 @@ public class CategoryController {
         log.info("RESPONSE - GET [findAll]");
         return categoryDTOs;
     }
+
+
+    @GetMapping(value = "{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public CategoryDTO findById(@PathVariable Long id) {
+        log.info("REQUEST - GET [findById]");
+
+        CategoryDTO categoryDTO = service.findById(id);
+
+        log.info("RESPONSE - GET [findById]");
+        return categoryDTO;
+    }
 }
