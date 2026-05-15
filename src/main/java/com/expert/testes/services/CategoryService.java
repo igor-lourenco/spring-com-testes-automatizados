@@ -44,6 +44,15 @@ public class CategoryService {
     }
 
 
+    @Transactional
+    public CategoryDTO update(Long id, CategoryDTO dto) {
+        Category category = findCategoryById(id);
+        category.setName(dto.name());
+
+        return new CategoryDTO(category);
+    }
+
+
     private Category findCategoryById(Long id) {
         return repository.findById(id).orElseThrow(() ->
             new EntityNotFoundException("Category não encontrado: " + id));

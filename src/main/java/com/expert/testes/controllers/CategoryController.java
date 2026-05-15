@@ -61,4 +61,21 @@ public class CategoryController {
     }
 
 
+    @PutMapping(value = "{id}")
+    @ResponseStatus(HttpStatus.OK)
+
+    public CategoryDTO update(@PathVariable Long id, @RequestBody CategoryDTO dto) {
+        log.info("REQUEST - PUT [update]");
+
+        CategoryDTO categoryDTO = service.update(id, dto);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+            .path("/{id}")
+            .buildAndExpand(categoryDTO.id())
+            .toUri();
+
+        log.info("RESPONSE - PUT [update]");
+        return categoryDTO;
+    }
+
+
 }
