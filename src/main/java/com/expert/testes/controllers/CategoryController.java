@@ -63,18 +63,23 @@ public class CategoryController {
 
     @PutMapping(value = "{id}")
     @ResponseStatus(HttpStatus.OK)
-
     public CategoryDTO update(@PathVariable Long id, @RequestBody CategoryDTO dto) {
         log.info("REQUEST - PUT [update]");
 
         CategoryDTO categoryDTO = service.update(id, dto);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-            .path("/{id}")
-            .buildAndExpand(categoryDTO.id())
-            .toUri();
 
         log.info("RESPONSE - PUT [update]");
         return categoryDTO;
+    }
+
+    @DeleteMapping(value = "{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
+        log.info("REQUEST - DELETE [delete]");
+
+        service.delete(id);
+
+        log.info("RESPONSE - PUT [delete]");
     }
 
 

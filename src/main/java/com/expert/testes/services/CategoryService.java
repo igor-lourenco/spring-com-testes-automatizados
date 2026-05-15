@@ -3,10 +3,13 @@ package com.expert.testes.services;
 import com.expert.testes.DTOs.CategoryDTO;
 import com.expert.testes.entities.Category;
 import com.expert.testes.repositories.CategoryRepository;
+import com.expert.testes.services.exceptions.DatabaseException;
 import com.expert.testes.services.exceptions.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -52,6 +55,19 @@ public class CategoryService {
         return new CategoryDTO(category);
     }
 
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    public void delete(Long id) {
+        if (!repository.existsById(id)){
+            throw new EntityNotFoundException("Category não encontrado: " + id);
+        }
+
+        try {
+            repository.deleteById(id);
+        }catch (DataIntegrityViolationException e){
+            throw new DatabaseException("Falha de integridade referencial");
+        }
+    }
 
     private Category findCategoryById(Long id) {
         return repository.findById(id).orElseThrow(() ->

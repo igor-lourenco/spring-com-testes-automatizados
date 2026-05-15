@@ -27,11 +27,11 @@ public class StandardError {
     private String path;
 
 
-    public static StandardError createStandardError(HttpStatus status, String path, Exception e){
+    public static StandardError createStandardError(HttpStatus status, String path, String error, Exception e){
         return StandardError.builder()
             .timestamp(LocalDateTime.now())
             .status(status.value())
-            .error("Recurso não encontrado")
+            .error(error)
             .message(e.getMessage())
             .path(path)
             .build();
