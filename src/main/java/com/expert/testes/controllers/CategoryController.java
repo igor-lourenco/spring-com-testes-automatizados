@@ -5,6 +5,10 @@ import com.expert.testes.entities.Category;
 import com.expert.testes.services.CategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +34,20 @@ public class CategoryController {
         List<CategoryDTO> categoryDTOs = service.findAll();
 
         log.info("RESPONSE - GET [findAll]");
+        return categoryDTOs;
+    }
+
+
+    @GetMapping(value = "/page")
+    @ResponseStatus(HttpStatus.OK)
+    public Page<CategoryDTO> findAllPaged(
+            @PageableDefault(page = 0, size = 12, sort = "name", direction = Sort.Direction.ASC) Pageable pageable
+    ) {
+        log.info("REQUEST - GET [findAllPaged]");
+
+        Page<CategoryDTO> categoryDTOs = service.findAllPaged(pageable);
+
+        log.info("RESPONSE - GET [findAllPaged]");
         return categoryDTOs;
     }
 

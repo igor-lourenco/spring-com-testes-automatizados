@@ -8,10 +8,14 @@ import com.expert.testes.services.exceptions.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Log4j2
@@ -72,5 +76,16 @@ public class CategoryService {
     private Category findCategoryById(Long id) {
         return repository.findById(id).orElseThrow(() ->
             new EntityNotFoundException("Category não encontrado: " + id));
+    }
+
+    public Page<CategoryDTO> findAllPaged(Pageable pageable) {
+        Page<CategoryDTO> page = repository.findAll(pageable).map(CategoryDTO::new);
+
+//        return new PageImpl<>(
+//            new ArrayList<>(page.getContent()),
+//            page.getPageable(),
+//            page.getTotalElements());
+
+        return page;
     }
 }
