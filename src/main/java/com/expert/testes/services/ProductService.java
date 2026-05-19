@@ -92,7 +92,7 @@ public class ProductService {
     }
 
 
-    @Transactional(propagation = Propagation.SUPPORTS)
+    @Transactional(propagation = Propagation.SUPPORTS) //Participa de uma transação existente, mas NÃO cria uma nova
     public void delete(Long id) {
         if (!repository.existsById(id)) {
             throw new EntidadeNotFoundException("Product não encontrado: " + id);

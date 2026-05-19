@@ -16,7 +16,6 @@ INSERT INTO tb_product (name, description, price, img_url, created_at) VALUES ('
 INSERT INTO tb_product (name, description, price, img_url, created_at) VALUES ('Washing Machine', '11kg washer', 1800.00, 'https://example.com/images/products/washing-machine.png', now());
 INSERT INTO tb_product (name, description, price, img_url, created_at) VALUES ('Air Fryer', 'Oil-free fryer', 350.00, 'https://example.com/images/products/air-fryer.png', now());
 
-
 -- Books (2)
 INSERT INTO tb_product (name, description, price, img_url, created_at) VALUES ('Clean Code', 'Software craftsmanship book', 120.00, 'https://example.com/images/products/clean-code.png', now());
 INSERT INTO tb_product (name, description, price, img_url, created_at) VALUES ('Design Patterns', 'Classic patterns book', 150.00, 'https://example.com/images/products/design-patterns.png', now());
@@ -30,7 +29,6 @@ INSERT INTO tb_product (name, description, price, img_url, created_at) VALUES ('
 INSERT INTO tb_product (name, description, price, img_url, created_at) VALUES ('Yoga Mat', 'Non slip mat', 80.00, 'https://example.com/images/products/yoga-mat.png', now());
 INSERT INTO tb_product (name, description, price, img_url, created_at) VALUES ('Tennis Racket', 'Professional racket', 500.00, 'https://example.com/images/products/tennis-racket.png', now());
 INSERT INTO tb_product (name, description, price, img_url, created_at) VALUES ('Gym Gloves', 'Workout gloves', 60.00, 'https://example.com/images/products/gym-gloves.png', now());
-
 
 -- Soccer (4)
 INSERT INTO tb_product (name, description, price, img_url, created_at) VALUES ('Soccer Ball', 'Official size ball', 120.00, 'https://example.com/images/products/soccer-ball.png', now());
@@ -82,7 +80,7 @@ INSERT INTO tb_product (name, description, price, img_url, created_at) VALUES ('
 INSERT INTO tb_product (name, description, price, img_url, created_at) VALUES ('SSD 1TB', 'Fast storage', 600.00, 'https://example.com/images/products/ssd-1tb.png', now());
 
 
-
+-- =======================================================
 -- vínculo principal (cada produto com sua categoria base)
 
 
@@ -157,35 +155,35 @@ INSERT INTO tb_product_category (product_id, category_id) VALUES (49,10);
 INSERT INTO tb_product_category (product_id, category_id) VALUES (50,10);
 
 
--- eletrônicos + computadores
+-- Electronics + Computers
 INSERT INTO tb_product_category (product_id, category_id) VALUES (46,8);
 INSERT INTO tb_product_category (product_id, category_id) VALUES (47,8);
 INSERT INTO tb_product_category (product_id, category_id) VALUES (48,8);
 INSERT INTO tb_product_category (product_id, category_id) VALUES (49,8);
 INSERT INTO tb_product_category (product_id, category_id) VALUES (50,8);
 
--- notebooks também são computadores
+-- Notebooks também é um Computers
 INSERT INTO tb_product_category (product_id, category_id) VALUES (26,10);
 INSERT INTO tb_product_category (product_id, category_id) VALUES (27,10);
 INSERT INTO tb_product_category (product_id, category_id) VALUES (28,10);
 INSERT INTO tb_product_category (product_id, category_id) VALUES (29,10);
 INSERT INTO tb_product_category (product_id, category_id) VALUES (30,10);
 
--- smartphones também electronics
+-- Smartphones também é um Electronics
 INSERT INTO tb_product_category (product_id, category_id) VALUES (31,8);
 INSERT INTO tb_product_category (product_id, category_id) VALUES (32,8);
 INSERT INTO tb_product_category (product_id, category_id) VALUES (33,8);
 INSERT INTO tb_product_category (product_id, category_id) VALUES (34,8);
 INSERT INTO tb_product_category (product_id, category_id) VALUES (35,8);
 
--- soccer pertence sports
+-- Soccer também é um Sports
 INSERT INTO tb_product_category (product_id, category_id) VALUES (16,3);
 INSERT INTO tb_product_category (product_id, category_id) VALUES (17,3);
 INSERT INTO tb_product_category (product_id, category_id) VALUES (18,3);
 INSERT INTO tb_product_category (product_id, category_id) VALUES (19,3);
 INSERT INTO tb_product_category (product_id, category_id) VALUES (20,3);
 
--- swimming pertence sports
+-- Swimming também é um Sports
 INSERT INTO tb_product_category (product_id, category_id) VALUES (21,3);
 INSERT INTO tb_product_category (product_id, category_id) VALUES (22,3);
 INSERT INTO tb_product_category (product_id, category_id) VALUES (23,3);

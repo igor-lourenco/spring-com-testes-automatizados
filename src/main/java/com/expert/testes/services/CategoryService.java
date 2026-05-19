@@ -71,7 +71,7 @@ public class CategoryService {
     }
 
 
-    @Transactional(propagation = Propagation.SUPPORTS)
+    @Transactional(propagation = Propagation.SUPPORTS) // Participa de uma transação existente, mas NÃO cria uma nova
     public void delete(Long id) {
         if (!repository.existsById(id)){
             throw new EntidadeNotFoundException("Category não encontrado: " + id);

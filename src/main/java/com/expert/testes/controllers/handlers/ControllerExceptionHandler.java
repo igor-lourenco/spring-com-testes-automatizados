@@ -1,4 +1,4 @@
-package com.expert.testes.controllers.exceptions;
+package com.expert.testes.controllers.handlers;
 
 import com.expert.testes.services.exceptions.DatabaseException;
 import com.expert.testes.services.exceptions.EntidadeNotFoundException;
