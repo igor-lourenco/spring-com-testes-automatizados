@@ -4,18 +4,16 @@ import com.expert.testes.DTOs.CategoryDTO;
 import com.expert.testes.entities.Category;
 import com.expert.testes.repositories.CategoryRepository;
 import com.expert.testes.services.exceptions.DatabaseException;
-import com.expert.testes.services.exceptions.EntityNotFoundException;
+import com.expert.testes.services.exceptions.EntidadeNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Log4j2
@@ -31,6 +29,19 @@ public class CategoryService {
         return repository.findAll().stream()
             .map(CategoryDTO::new)
             .toList();
+    }
+
+
+    @Transactional(readOnly = true)
+    public Page<CategoryDTO> findAllPaged(Pageable pageable) {
+        Page<CategoryDTO> page = repository.findAll(pageable).map(CategoryDTO::new);
+
+//        return new PageImpl<>(
+//            new ArrayList<>(page.getContent()),
+//            page.getPageable(),
+//            page.getTotalElements());
+
+        return page;
     }
 
 
@@ -63,7 +74,7 @@ public class CategoryService {
     @Transactional(propagation = Propagation.SUPPORTS)
     public void delete(Long id) {
         if (!repository.existsById(id)){
-            throw new EntityNotFoundException("Category não encontrado: " + id);
+            throw new EntidadeNotFoundException("Category não encontrado: " + id);
         }
 
         try {
@@ -75,17 +86,8 @@ public class CategoryService {
 
     private Category findCategoryById(Long id) {
         return repository.findById(id).orElseThrow(() ->
-            new EntityNotFoundException("Category não encontrado: " + id));
+            new EntidadeNotFoundException("Category não encontrado: " + id));
     }
 
-    public Page<CategoryDTO> findAllPaged(Pageable pageable) {
-        Page<CategoryDTO> page = repository.findAll(pageable).map(CategoryDTO::new);
 
-//        return new PageImpl<>(
-//            new ArrayList<>(page.getContent()),
-//            page.getPageable(),
-//            page.getTotalElements());
-
-        return page;
-    }
 }
