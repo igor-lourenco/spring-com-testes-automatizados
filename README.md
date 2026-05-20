@@ -16,3 +16,16 @@
 -	É uma forma de documentação (comportamento e entradas/saídas esperadas)
 -	Redução de custos em manutenções, especialmente em fases avançadas
 -	Melhora design da solução, pois a aplicação testável precisa ser bem delineada
+
+###  TDD - Test Driven Development
+É um método de desenvolver software. Consiste em um desenvolvimento guiado pelos testes.
+
+#### Princípios / vantagens:
+-	Foco nos requisitos
+-	Tende a melhorar o design do código, pois o código deverá ser testável
+-	Incrementos no projeto têm menos chance de quebrar a aplicação
+
+#### Processo básico:
+1.	Escreva o teste como esperado (naturalmente que ele ainda estará falhando)
+2.	Implemente o código necessário para que o teste passe
+3.	Refatore o código conforme necessidade
