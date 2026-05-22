@@ -33,7 +33,22 @@ public class ProductRepositoryTests {
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
 
-    @Test  // <Salvar> deve <PersistirObjeto> quando <IdEhNull>
+    @Test  // <findById> deve <RetornarOptionalNaoVazio> [quando <IdExistir>]
+    public void findByIdShouldReturnNonEmptyOptionalWhenIdExists(){
+//      Padrão AAA
+
+//   	Arrange: instancie os objetos necessários
+        Optional<Product> productOptional = Optional.empty();
+
+//      Act: execute as ações necessárias
+        productOptional = repository.findById(existingId);
+
+//      Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertTrue(productOptional.isPresent());
+    }
+
+
+    @Test  // <salvar> deve <PersistirObjeto> [quando <IdEhNull>]
     public void saveShouldPersistObjectWhenIdIsNull(){
 //      Padrão AAA
 
@@ -51,7 +66,8 @@ public class ProductRepositoryTests {
         Assertions.assertEquals(product.getCategories().stream().findFirst().get().getId(), 8L);
     }
 
-    @Test  //  <Excluir> deve <excluirObjeto> quando <IdExistir>
+
+    @Test  //  <excluir> deve <excluirObjeto> [quando <IdExistir>]
     public void deleteShouldDeleteObjectWhenIdExists(){
 //      Padrão AAA
 
@@ -65,6 +81,4 @@ public class ProductRepositoryTests {
         Optional<Product> result = repository.findById(existingId);
         Assertions.assertFalse(result.isPresent());
     }
-
-
 }
