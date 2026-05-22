@@ -9,9 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
-import java.math.BigDecimal;
 import java.util.Optional;
-import java.util.Set;
 
 @DataJpaTest // Carrega somente os componentes relacionados ao Spring Data JPA. Cada teste é transacional e dá rollback ao final. (teste de unidade: repository)
 public class ProductRepositoryTests {
@@ -32,6 +30,22 @@ public class ProductRepositoryTests {
 
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
+
+
+    @Test  // <findById> deve <RetornarOptionalVazio> [quando <IdExistir>]
+    public void findByIdShouldReturnEmptyOptionalWhenIdExists(){
+//      Padrão AAA
+
+//   	Arrange: instancie os objetos necessários
+        Optional<Product> productOptional = Optional.empty();
+
+//      Act: execute as ações necessárias
+        productOptional = repository.findById(999L);
+
+//      Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertFalse(productOptional.isPresent());
+    }
+
 
     @Test  // <findById> deve <RetornarOptionalNaoVazio> [quando <IdExistir>]
     public void findByIdShouldReturnNonEmptyOptionalWhenIdExists(){
