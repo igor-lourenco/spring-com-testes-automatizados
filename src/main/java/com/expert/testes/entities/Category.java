@@ -18,6 +18,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Table(name = "tb_category")
+@Builder
 public class Category {
 
     @EqualsAndHashCode.Include

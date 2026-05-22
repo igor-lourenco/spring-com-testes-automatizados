@@ -17,6 +17,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Table(name = "tb_product")
+@Builder
 public class Product {
 
     @EqualsAndHashCode.Include

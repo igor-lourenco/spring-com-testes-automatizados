@@ -1,13 +1,17 @@
 package com.expert.testes.repositories;
 
+import com.expert.testes.entities.Category;
 import com.expert.testes.entities.Product;
+import com.expert.testes.utils.ProductFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
+import java.math.BigDecimal;
 import java.util.Optional;
+import java.util.Set;
 
 @DataJpaTest // Carrega somente os componentes relacionados ao Spring Data JPA. Cada teste é transacional e dá rollback ao final. (teste de unidade: repository)
 public class ProductRepositoryTests {
@@ -16,6 +20,8 @@ public class ProductRepositoryTests {
 
     @Autowired
     private ProductRepository repository; // considera o seed do banco que tiver no arquivo import.sql
+    @Autowired
+    private CategoryRepository categoryRepository; // considera o seed do banco que tiver no arquivo import.sql
 
 
     @BeforeEach // Preparação antes de cada teste da classe
@@ -24,7 +30,26 @@ public class ProductRepositoryTests {
     }
 
 
+
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
+
+    @Test  // <Salvar> deve <PersistirObjeto> quando <IdEhNull>
+    public void saveShouldPersistObjectWhenIdIsNull(){
+//      Padrão AAA
+
+//   	Arrange: instancie os objetos necessários
+        Category categoryReferenceById = categoryRepository.getReferenceById(8L);
+        Product product = ProductFactory.createWithoutCategory();
+        product.getCategories().add(categoryReferenceById);
+
+//      Act: execute as ações necessárias
+        product = repository.save(product);
+
+//      Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertNotNull(product.getId());
+        Assertions.assertEquals(product.getId(), 51L);
+        Assertions.assertEquals(product.getCategories().stream().findFirst().get().getId(), 8L);
+    }
 
     @Test  //  <Excluir> deve <excluirObjeto> quando <IdExistir>
     public void deleteShouldDeleteObjectWhenIdExists(){
