@@ -1,6 +1,7 @@
 package com.expert.testes.services;
 
 import com.expert.testes.repositories.ProductRepository;
+import com.expert.testes.services.exceptions.DatabaseException;
 import com.expert.testes.services.exceptions.EntidadeNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 
 //@ExtendWith(SpringExtension.class) // Não carrega o contexto, mas permite usar os recursos do Spring com JUnit (teste de unidade: service/component)
 @ExtendWith(MockitoExtension.class) // Não carrega o contexto, mas permite usar os recursos do Spring com JUnit (teste de unidade: service/component)
@@ -17,6 +19,7 @@ public class ProductServiceTests {
 
     private long existingId;
     private long nonExistingId;
+    private long dependentId;
 
     @InjectMocks // Define o objeto principal que está sendo testado, cria uma instância real dessa classe e injeta automaticamente todos os mocks criados nela
     private ProductService service;
@@ -27,13 +30,43 @@ public class ProductServiceTests {
 
     @BeforeEach // Preparação antes de cada teste da classe
     void setUp() throws Exception{
+
+//      Os valores não nenhum vínculo com o banco de dados, são apenas valores de controle para simulação
         existingId = 1L;
         nonExistingId = 999L;
+        dependentId = 2L;
     }
 
 
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
+
+    @Test  //  <delete> deve <LancarDatabaseException> [quando <IdEhDependente>]
+    public void deleteShouldThrowDatabaseExceptionWhenDependentId(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(repository.existsById(dependentId)).thenReturn(true); // repository.existsById → retorna true quando o id dependente existir
+        Mockito.doThrow(DataIntegrityViolationException.class).when(repository).deleteById(dependentId); // repository.deleteById → lançe DataIntegrityViolationException quando deletar id dependente
+
+//      -> Act: execute as ações necessárias
+        Assertions.assertThrows(DatabaseException.class, () -> {
+            service.delete(dependentId);
+        });
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Mockito.verify( // garante que o método do 'repository.existsById' que está dentro do 'service.delete' foi usado exatamente 1 vez
+            repository,
+                Mockito.times(1)
+        ).existsById(dependentId);
+
+        Mockito.verify( // garante que o método do 'repository.deleteById' que está dentro do 'service.delete' foi usado exatamente 1 vez
+            repository,
+            Mockito.times(1)
+        ).deleteById(dependentId);
+    }
+
 
     @Test  //  <delete> deve <LancarEntidadeNotFoundException> [quando <IdNaoExistir>]
     public void deleteShouldThrowEntidadeNotFoundExceptionWhenIdDoesNotExists(){
