@@ -62,7 +62,7 @@ public class ProductRepositoryTests {
     }
 
 
-    @Test  // <salvar> deve <PersistirObjeto> [quando <IdEhNull>]
+    @Test  // <save> deve <PersistirObjeto> [quando <IdEhNull>]
     public void saveShouldPersistObjectWhenIdIsNull(){
 //      Padrão AAA
 
@@ -81,7 +81,7 @@ public class ProductRepositoryTests {
     }
 
 
-    @Test  //  <excluir> deve <excluirObjeto> [quando <IdExistir>]
+    @Test  //  <delete> deve <excluirObjeto> [quando <IdExistir>]
     public void deleteShouldDeleteObjectWhenIdExists(){
 //      Padrão AAA
 
