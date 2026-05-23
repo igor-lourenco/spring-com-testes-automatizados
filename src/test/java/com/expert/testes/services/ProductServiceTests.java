@@ -1,6 +1,7 @@
 package com.expert.testes.services;
 
 import com.expert.testes.repositories.ProductRepository;
+import com.expert.testes.services.exceptions.EntidadeNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class ProductServiceTests {
 
     private long existingId;
+    private long nonExistingId;
 
     @InjectMocks // Define o objeto principal que está sendo testado, cria uma instância real dessa classe e injeta automaticamente todos os mocks criados nela
     private ProductService service;
@@ -26,24 +28,59 @@ public class ProductServiceTests {
     @BeforeEach // Preparação antes de cada teste da classe
     void setUp() throws Exception{
         existingId = 1L;
-
-//      cenário delete: quando id existir
-        Mockito.doNothing().when(repository).deleteById(existingId); //  repository.deleteById → não faz nada quando o id existir
-        Mockito.when(repository.existsById(existingId)).thenReturn(true); // repository.existsById → retorna true quando o id existir
+        nonExistingId = 999L;
     }
+
 
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
 
+    @Test  //  <delete> deve <LancarEntidadeNotFoundException> [quando <IdNaoExistir>]
+    public void deleteShouldThrowEntidadeNotFoundExceptionWhenIdDoesNotExists(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(repository.existsById(nonExistingId)).thenReturn(false); // repository.existsById → retorna false quando o id não existir
+
+
+//      -> Act: execute as ações necessárias
+        Assertions.assertThrows(EntidadeNotFoundException.class, () -> {
+            service.delete(nonExistingId);
+        });
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Mockito.verify( // garante que o método do 'repository.existsById' que está dentro do 'service.delete' foi usado exatamente 1 vez
+            repository,
+                Mockito.times(1)
+        ).existsById(nonExistingId);
+
+        Mockito.verify( // garante que o método do 'repository.deleteById' que está dentro do 'service.delete' não tenha usado.
+            repository,
+                Mockito.never()
+        ).deleteById(nonExistingId);
+    }
+
+
     @Test  //  <delete> deve <FazerNada> [quando <IdExistir>]
     public void deleteShouldDoNothingWhenIdExists(){
+//      -> Padrão AAA
 
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(repository.existsById(existingId)).thenReturn(true); // repository.existsById → retorna true quando o id existir
+        Mockito.doNothing().when(repository).deleteById(existingId); //  repository.deleteById → não faz nada quando o id existir
+
+
+//      -> Act: execute as ações necessárias
         Assertions.assertDoesNotThrow(() -> {
             service.delete(existingId);
         });
 
 
-//      para auditar comportamento: garante que o método do 'repository.deleteById' que está dentro do 'service.delete' foi chamado exatamente 1 vez
-        Mockito.verify(repository, Mockito.times(1)).deleteById(existingId);
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Mockito.verify( // garante que o método do 'repository.deleteById' que está dentro do 'service.delete' foi usado exatamente 1 vez
+            repository,
+            Mockito.times(1)
+        ).deleteById(existingId);
     }
 }
