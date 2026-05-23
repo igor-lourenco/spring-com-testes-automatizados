@@ -1,8 +1,10 @@
 package com.expert.testes.services;
 
+import com.expert.testes.DTOs.ProductDTO;
 import com.expert.testes.repositories.ProductRepository;
 import com.expert.testes.services.exceptions.DatabaseException;
 import com.expert.testes.services.exceptions.EntidadeNotFoundException;
+import com.expert.testes.utils.ProductFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
 
+import java.util.Optional;
+
 //@ExtendWith(SpringExtension.class) // Não carrega o contexto, mas permite usar os recursos do Spring com JUnit (teste de unidade: service/component)
 @ExtendWith(MockitoExtension.class) // Não carrega o contexto, mas permite usar os recursos do Spring com JUnit (teste de unidade: service/component)
 public class ProductServiceTests {
@@ -20,6 +24,7 @@ public class ProductServiceTests {
     private long existingId;
     private long nonExistingId;
     private long dependentId;
+    private ProductDTO productDTO;
 
     @InjectMocks // Define o objeto principal que está sendo testado, cria uma instância real dessa classe e injeta automaticamente todos os mocks criados nela
     private ProductService service;
@@ -35,11 +40,37 @@ public class ProductServiceTests {
         existingId = 1L;
         nonExistingId = 999L;
         dependentId = 2L;
+        productDTO = ProductFactory.createProductDTOWithCategory();
     }
 
 
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
+
+    @Test  //  <update> deve <LancarEntidadeNotFoundException> [quando <IdNaoExistir>]
+    public void updateShouldThrowEntidadeNotFoundExceptionWhenIdDoesNotExists(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(repository.findById(nonExistingId)).thenReturn(Optional.empty()); // repository.findById → deve retornar Optional vazio quando id não existir
+
+
+//      -> Act: execute as ações necessárias
+        Assertions.assertThrows(EntidadeNotFoundException.class, () -> {
+            service.update(nonExistingId, productDTO);
+        });
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Mockito.verify( // garante que o método do 'repository.findById' que está dentro do 'service.delete' foi usado exatamente 1 vez
+            repository,
+            Mockito.times(1)
+        ).findById(nonExistingId);
+
+        Mockito // garante que o 'repository' que está dentro do 'service.update' não foi usado além do esperado após a execução completa
+            .verifyNoMoreInteractions(repository);
+    }
+
 
     @Test  //  <delete> deve <LancarDatabaseException> [quando <IdEhDependente>]
     public void deleteShouldThrowDatabaseExceptionWhenDependentId(){
