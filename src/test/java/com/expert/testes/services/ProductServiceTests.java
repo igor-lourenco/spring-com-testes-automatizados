@@ -1,10 +1,16 @@
 package com.expert.testes.services;
 
 import com.expert.testes.DTOs.ProductDTO;
+import com.expert.testes.entities.Category;
+import com.expert.testes.entities.Product;
+import com.expert.testes.repositories.CategoryRepository;
 import com.expert.testes.repositories.ProductRepository;
 import com.expert.testes.services.exceptions.DatabaseException;
 import com.expert.testes.services.exceptions.EntidadeNotFoundException;
+import com.expert.testes.utils.CategoryFactory;
 import com.expert.testes.utils.ProductFactory;
+import jakarta.persistence.EntityNotFoundException;
+import org.hibernate.ObjectNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,13 +30,23 @@ public class ProductServiceTests {
     private long existingId;
     private long nonExistingId;
     private long dependentId;
-    private ProductDTO productDTO;
+    private long nonExistingCategoryId;
+
+    private Product product;               // Product com lista de Category vazia
+    private Category categoryNonExisting;  // Category não existente
+
+    private ProductDTO productDTOWithCategoryDTOEmpty;       // ProductDTO com lista de CategoryDTO vazia
+    private ProductDTO productDTOWithNonExistingCategoryId;  // ProductDTO com CategoryDTO não existente
+
 
     @InjectMocks // Define o objeto principal que está sendo testado, cria uma instância real dessa classe e injeta automaticamente todos os mocks criados nela
     private ProductService service;
 
     @Mock // Cria uma simulação, evita conexões reais com o banco de dados e permite programar retornos fictícios para os métodos do repositório.
     private ProductRepository repository;
+
+    @Mock // Cria uma simulação, evita conexões reais com o banco de dados e permite programar retornos fictícios para os métodos do repositório.
+    private CategoryRepository categoryRepository;
 
 
     @BeforeEach // Preparação antes de cada teste da classe
@@ -40,12 +56,55 @@ public class ProductServiceTests {
         existingId = 1L;
         nonExistingId = 999L;
         dependentId = 2L;
-        productDTO = ProductFactory.createProductDTOWithCategory();
+        nonExistingCategoryId = 999L;
+
+        product = ProductFactory.createWithoutCategory();                            // Product com lista de Category vazia
+        categoryNonExisting = CategoryFactory.createCategory(nonExistingCategoryId); // Category não existente
+
+        productDTOWithCategoryDTOEmpty = ProductFactory.createDTOWithoutCategory();                      // ProductDTO com lista de CategoryDTO vazia
+        productDTOWithNonExistingCategoryId = ProductFactory.createDTOWithCategory(categoryNonExisting); // ProductDTO com CategoryDTO não existente
     }
 
 
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
+
+
+    @Test  //  <update> deve <LancarEntidadeNotFoundException> [quando <CategoryIdNaoExistir>]
+    public void updateShouldThrowEntidadeNotFoundExceptionWhenCategoryIdDoesNotExists(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(repository.findById(existingId)).thenReturn(Optional.of(product)); // repository.findById → deve retornar Optional de Product quando id existir
+
+        Mockito.doThrow( // categoryRepository.getReferenceById → lança EntityNotFoundException quando deletar categoryId não existir
+            new EntityNotFoundException("Erro", new ObjectNotFoundException(nonExistingCategoryId, "Category")))
+            .when(categoryRepository).getReferenceById(nonExistingCategoryId);
+
+
+//      -> Act: execute as ações necessárias
+        EntidadeNotFoundException ex = Assertions.assertThrows(EntidadeNotFoundException.class, () -> {
+            service.update(existingId, productDTOWithNonExistingCategoryId);
+        });
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertTrue(ex.getMessage().contains("Category não encontrado: " + nonExistingCategoryId));
+
+        Mockito.verify( // garante que o método do 'repository.findById' que está dentro do 'service.delete' foi usado exatamente 1 vez
+            repository,
+            Mockito.times(1)
+        ).findById(existingId);
+
+        Mockito.verify( // garante que o método do 'categoryRepository.getReferenceById' que está dentro do 'service.update' foi usado exatamente 1 vez
+            categoryRepository,
+                Mockito.times(1)
+        ).getReferenceById(nonExistingCategoryId);
+
+        Mockito // garante que o 'repository' que está dentro do 'service.update' não foi usado além do esperado após a execução completa
+            .verifyNoMoreInteractions(repository);
+    }
+
 
     @Test  //  <update> deve <LancarEntidadeNotFoundException> [quando <IdNaoExistir>]
     public void updateShouldThrowEntidadeNotFoundExceptionWhenIdDoesNotExists(){
@@ -57,7 +116,7 @@ public class ProductServiceTests {
 
 //      -> Act: execute as ações necessárias
         Assertions.assertThrows(EntidadeNotFoundException.class, () -> {
-            service.update(nonExistingId, productDTO);
+            service.update(nonExistingId, productDTOWithCategoryDTOEmpty);
         });
 
 

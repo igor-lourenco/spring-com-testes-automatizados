@@ -5,7 +5,6 @@ import com.expert.testes.entities.Category;
 import com.expert.testes.entities.Product;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,20 +20,13 @@ public class ProductFactory {
             .build();
     }
 
-    public static ProductDTO createProductDTOWithCategory(){
+    public static ProductDTO createDTOWithoutCategory(){
         Product product = createWithoutCategory();
-        product.getCategories().add(createCategory());
         return new ProductDTO(product, product.getCategories());
     }
 
-    private static Category createCategory(){
-        return Category.builder()
-            .id(1L)
-            .name("Category Mock")
-            .createdAt(LocalDateTime.now())
-            .updatedAt(LocalDateTime.now())
-            .products(Set.of(ProductFactory.createWithoutCategory()))
-            .build();
-
+    public static ProductDTO createDTOWithCategory(Category category){
+        Product product = createWithoutCategory();
+        return new ProductDTO(product, Set.of(category));
     }
 }
