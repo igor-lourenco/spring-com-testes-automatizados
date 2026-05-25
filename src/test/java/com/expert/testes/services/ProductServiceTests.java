@@ -79,6 +79,37 @@ public class ProductServiceTests {
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
 
 
+    @Test  //  <insert> deve <LancarEntidadeNotFoundException> [quando <CategoryIdNaoExistir>]
+    public void insertShouldThrowEntidadeNotFoundExceptionWhenCategoryIdDoesNotExists(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.doThrow( // categoryRepository.getReferenceById → lança EntityNotFoundException quando categoryId não existir
+                new EntityNotFoundException("Erro", new ObjectNotFoundException(nonExistingCategoryId, "Category")))
+            .when(categoryRepository).getReferenceById(nonExistingCategoryId);
+
+
+//      -> Act: execute as ações necessárias
+        EntidadeNotFoundException ex = Assertions.assertThrows(EntidadeNotFoundException.class, () -> {
+            service.insert(productDTOWithNonExistingCategoryId);
+        });
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertTrue(ex.getMessage().contains("Category não encontrado: " + nonExistingCategoryId));
+
+        Mockito.verify( // garante que o método do 'categoryRepository.getReferenceById' que está dentro do 'service.update' foi usado exatamente 1 vez
+            categoryRepository,
+            Mockito.times(1)
+        ).getReferenceById(nonExistingCategoryId);
+
+        Mockito.verify( // garante que o método 'repository.save' que está dentro do 'service.insert' não tenha sido chamado
+            repository,
+            Mockito.never())
+        .save(Mockito.any());
+    }
+
+
     @Test  //  <update> deve <AtualizarObjeto> [quando <IdExistir>]
     public void updateShouldUpdateEntidadeWhenIdExists(){
 //      -> Padrão AAA
@@ -116,7 +147,7 @@ public class ProductServiceTests {
 //   	-> Arrange: instancie os objetos necessários
         Mockito.when(repository.findById(existingId)).thenReturn(Optional.of(product)); // repository.findById → deve retornar Optional de Product quando id existir
 
-        Mockito.doThrow( // categoryRepository.getReferenceById → lança EntityNotFoundException quando deletar categoryId não existir
+        Mockito.doThrow( // categoryRepository.getReferenceById → lança EntityNotFoundException quando categoryId não existir
             new EntityNotFoundException("Erro", new ObjectNotFoundException(nonExistingCategoryId, "Category")))
             .when(categoryRepository).getReferenceById(nonExistingCategoryId);
 
