@@ -10,6 +10,21 @@ import java.util.Set;
 
 public class ProductFactory {
 
+    public static Product createWitCategory(Long productId, Long categoryId){
+
+        Set<Category> categorySet = new HashSet<>();
+        categorySet.add(CategoryFactory.createCategory(categoryId));
+
+        return Product.builder()
+            .id(productId)
+            .name("Phone")
+            .description("Good Phone")
+            .price(new BigDecimal(800.0))
+            .imgUrl("https://img.com/phone.png")
+            .categories(categorySet)
+            .build();
+    }
+
     public static Product createWithoutCategory(){
         return Product.builder()
             .name("Phone")
@@ -25,8 +40,8 @@ public class ProductFactory {
         return new ProductDTO(product, product.getCategories());
     }
 
-    public static ProductDTO createDTOWithCategory(Category category){
-        Product product = createWithoutCategory();
-        return new ProductDTO(product, Set.of(category));
+    public static ProductDTO createDTOWithCategoryDTO(Long productId, Long categoryId){
+        Product product = createWitCategory(productId, categoryId);
+        return new ProductDTO(product, product.getCategories());
     }
 }

@@ -31,12 +31,15 @@ public class ProductServiceTests {
     private long nonExistingId;
     private long dependentId;
     private long nonExistingCategoryId;
+    private long existingCategoryId;
 
-    private Product product;               // Product com lista de Category vazia
-    private Category categoryNonExisting;  // Category não existente
+    private Product product;             // Product com lista de Category vazia
+    private Product productWithCategory; // Product com lista de Category existente
+    private Category categoryExisting;   // Category existente
 
     private ProductDTO productDTOWithCategoryDTOEmpty;       // ProductDTO com lista de CategoryDTO vazia
     private ProductDTO productDTOWithNonExistingCategoryId;  // ProductDTO com CategoryDTO não existente
+    private ProductDTO productDTOWithCategoryDTO;            // ProductDTO com CategoryDTO existente
 
 
     @InjectMocks // Define o objeto principal que está sendo testado, cria uma instância real dessa classe e injeta automaticamente todos os mocks criados nela
@@ -57,17 +60,53 @@ public class ProductServiceTests {
         nonExistingId = 999L;
         dependentId = 2L;
         nonExistingCategoryId = 999L;
+        existingCategoryId = 1L;
 
-        product = ProductFactory.createWithoutCategory();                            // Product com lista de Category vazia
-        categoryNonExisting = CategoryFactory.createCategory(nonExistingCategoryId); // Category não existente
+        categoryExisting = CategoryFactory.createCategory(existingCategoryId);                            // Category existente
+        product = ProductFactory.createWithoutCategory();                                                 // Product com lista de Category vazia
+        productWithCategory = ProductFactory.createWitCategory(existingId, existingCategoryId); // Product com lista de Category existente
 
-        productDTOWithCategoryDTOEmpty = ProductFactory.createDTOWithoutCategory();                      // ProductDTO com lista de CategoryDTO vazia
-        productDTOWithNonExistingCategoryId = ProductFactory.createDTOWithCategory(categoryNonExisting); // ProductDTO com CategoryDTO não existente
+        productDTOWithCategoryDTOEmpty = ProductFactory.createDTOWithoutCategory();                       // ProductDTO com lista de CategoryDTO vazia
+        productDTOWithCategoryDTO = ProductFactory.                                                       // ProductDTO com CategoryDTO existente
+            createDTOWithCategoryDTO(existingId, existingCategoryId);
+        productDTOWithNonExistingCategoryId = ProductFactory                                              // ProductDTO com CategoryDTO não existente
+            .createDTOWithCategoryDTO(existingId, nonExistingCategoryId);
+
     }
 
 
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
+
+
+    @Test  //  <update> deve <AtualizarObjeto> [quando <IdExistir>]
+    public void updateShouldUpdateEntidadeWhenIdExists(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(repository.findById(existingId)).thenReturn(Optional.of(productWithCategory)); // repository.findById → deve retornar Optional de Product quando id existir
+        Mockito.when(categoryRepository.getReferenceById(existingCategoryId)).thenReturn(categoryExisting); // categoryRepository.getReferenceById → deve retornar Category quando id existir
+
+
+//      -> Act: execute as ações necessárias
+        ProductDTO productDTO = service.update(existingId, productDTOWithCategoryDTO);
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertNotNull(productDTO);
+        Assertions.assertEquals(existingCategoryId, productDTO.categoryDTOS().get(0).id());
+
+        Mockito.verify( // garante que o método do 'repository.findById' que está dentro do 'service.update' foi usado exatamente 1 vez
+            repository,
+            Mockito.times(1)
+        ).findById(existingId);
+//
+        Mockito.verify( // garante que o método do 'categoryRepository.getReferenceById' que está dentro do 'service.update' foi usado exatamente 1 vez
+            categoryRepository,
+            Mockito.times(1)
+        ).getReferenceById(existingCategoryId);
+
+    }
 
 
     @Test  //  <update> deve <LancarEntidadeNotFoundException> [quando <CategoryIdNaoExistir>]
@@ -91,7 +130,7 @@ public class ProductServiceTests {
 //      -> Assert: declare o que deveria acontecer (resultado esperado)
         Assertions.assertTrue(ex.getMessage().contains("Category não encontrado: " + nonExistingCategoryId));
 
-        Mockito.verify( // garante que o método do 'repository.findById' que está dentro do 'service.delete' foi usado exatamente 1 vez
+        Mockito.verify( // garante que o método do 'repository.findById' que está dentro do 'service.update' foi usado exatamente 1 vez
             repository,
             Mockito.times(1)
         ).findById(existingId);
@@ -121,7 +160,7 @@ public class ProductServiceTests {
 
 
 //      -> Assert: declare o que deveria acontecer (resultado esperado)
-        Mockito.verify( // garante que o método do 'repository.findById' que está dentro do 'service.delete' foi usado exatamente 1 vez
+        Mockito.verify( // garante que o método do 'repository.findById' que está dentro do 'service.update' foi usado exatamente 1 vez
             repository,
             Mockito.times(1)
         ).findById(nonExistingId);

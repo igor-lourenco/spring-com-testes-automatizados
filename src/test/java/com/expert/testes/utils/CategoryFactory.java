@@ -7,7 +7,7 @@ import java.util.Set;
 
 public class CategoryFactory {
 
-    private static Category createCategory(){
+    public static Category createCategory(){
         return Category.builder()
             .id(1L)
             .name("Category Mock")
@@ -18,9 +18,9 @@ public class CategoryFactory {
 
     }
 
-    public static Category createCategory(long nonExistingCategoryId){
+    public static Category createCategory(long categoryId){
         return Category.builder()
-            .id(nonExistingCategoryId)
+            .id(categoryId)
             .name("Category Mock")
             .createdAt(LocalDateTime.now())
             .updatedAt(LocalDateTime.now())
