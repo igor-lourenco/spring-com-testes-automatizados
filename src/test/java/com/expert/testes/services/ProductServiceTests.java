@@ -33,13 +33,14 @@ public class ProductServiceTests {
     private long nonExistingCategoryId;
     private long existingCategoryId;
 
+    private Category categoryExisting;   // Category existente
     private Product product;             // Product com lista de Category vazia
     private Product productWithCategory; // Product com lista de Category existente
-    private Category categoryExisting;   // Category existente
 
     private ProductDTO productDTOWithCategoryDTOEmpty;       // ProductDTO com lista de CategoryDTO vazia
     private ProductDTO productDTOWithNonExistingCategoryId;  // ProductDTO com CategoryDTO não existente
     private ProductDTO productDTOWithCategoryDTO;            // ProductDTO com CategoryDTO existente
+    private ProductDTO productDTOWithIdNullAndCategoryDTO;   // ProductDTO com Id null e CategoryDTO existente
 
 
     @InjectMocks // Define o objeto principal que está sendo testado, cria uma instância real dessa classe e injeta automaticamente todos os mocks criados nela
@@ -71,12 +72,44 @@ public class ProductServiceTests {
             createDTOWithCategoryDTO(existingId, existingCategoryId);
         productDTOWithNonExistingCategoryId = ProductFactory                                              // ProductDTO com CategoryDTO não existente
             .createDTOWithCategoryDTO(existingId, nonExistingCategoryId);
+        productDTOWithIdNullAndCategoryDTO = ProductFactory                                              // ProductDTO com Id null e CategoryDTO existente
+            .createDTOWithCategoryDTO(null, existingCategoryId);
 
     }
 
 
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
+
+
+    @Test  //  <insert> deve <PersistirObjeto> [quando <IdEhNull>]
+    public void insertShouldPersistObjectWhenIdIsNull(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(categoryRepository.getReferenceById(existingCategoryId)).thenReturn(categoryExisting); // categoryRepository.getReferenceById → deve retornar Category quando id existir
+        Mockito.when(repository.save(Mockito.any(Product.class))).thenReturn(productWithCategory); // repository.save → deve retornar um Product com Category quando receber qualquer objeto do tipo Product
+
+
+//      -> Act: execute as ações necessárias
+        ProductDTO productDTO = service.insert(productDTOWithIdNullAndCategoryDTO);
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertNotNull(productDTO);
+        Assertions.assertEquals(existingId, productDTO.id());
+
+
+        Mockito.verify( // garante que o método do 'categoryRepository.getReferenceById' que está dentro do 'service.update' foi usado exatamente 1 vez
+            categoryRepository,
+            Mockito.times(1)
+        ).getReferenceById(existingCategoryId);
+
+        Mockito.verify( // garante que o método 'repository.save' que está dentro do 'service.insert' não tenha sido chamado
+                repository,
+                Mockito.times(1))
+            .save(Mockito.any(Product.class));
+    }
 
 
     @Test  //  <insert> deve <LancarEntidadeNotFoundException> [quando <CategoryIdNaoExistir>]

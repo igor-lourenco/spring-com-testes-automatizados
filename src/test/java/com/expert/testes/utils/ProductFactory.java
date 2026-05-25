@@ -11,7 +11,6 @@ import java.util.Set;
 public class ProductFactory {
 
     public static Product createWitCategory(Long productId, Long categoryId){
-
         Set<Category> categorySet = new HashSet<>();
         categorySet.add(CategoryFactory.createCategory(categoryId));
 
