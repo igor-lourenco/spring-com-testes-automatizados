@@ -132,14 +132,38 @@ public class ProductServiceTests {
 //      -> Assert: declare o que deveria acontecer (resultado esperado)
         Assertions.assertNotNull(productDTO);
         Assertions.assertEquals(1, productDTO.id());
-        Assertions.assertEquals(productWithCategory.getCategories().size(), productDTO.categoryDTOS().size()
-        );
+        Assertions.assertEquals(productWithCategory.getCategories().size(), productDTO.categoryDTOS().size());
 
 
         Mockito.verify( // garante que o método 'repository.findById' que está dentro do 'service.findById' tenha sido chamado exatamente 1 vez
             repository,
             Mockito.times(1)
         ).findById(existingId);
+    }
+
+
+    @Test  //  <findById> deve <LancarEntidadeNotFoundException> [quando <IdNaoExistir>]
+    public void findByIdShouldThrowEntidadeNotFoundExceptionWhenIdDoesNotExists(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(repository.findById(nonExistingId)).thenReturn(Optional.empty()); // repository.findById → deve retornar Optional vazio quando id não existir
+
+
+//      -> Act: execute as ações necessárias
+        EntidadeNotFoundException ex = Assertions.assertThrows(EntidadeNotFoundException.class, () -> {
+            service.findById(nonExistingId);
+        });
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertEquals("Product não encontrado: " + nonExistingId, ex.getMessage());
+
+
+        Mockito.verify( // garante que o método 'repository.findById' que está dentro do 'service.findById' tenha sido chamado exatamente 1 vez
+            repository,
+            Mockito.times(1)
+        ).findById(nonExistingId);
     }
 
 
