@@ -20,7 +20,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 //@ExtendWith(SpringExtension.class) // Não carrega o contexto, mas permite usar os recursos do Spring com JUnit (teste de unidade: service/component)
@@ -41,6 +46,9 @@ public class ProductServiceTests {
     private ProductDTO productDTOWithNonExistingCategoryId;  // ProductDTO com CategoryDTO não existente
     private ProductDTO productDTOWithCategoryDTO;            // ProductDTO com CategoryDTO existente
     private ProductDTO productDTOWithIdNullAndCategoryDTO;   // ProductDTO com Id null e CategoryDTO existente
+
+    private PageImpl<Product> page;
+    private Pageable pageable;
 
 
     @InjectMocks // Define o objeto principal que está sendo testado, cria uma instância real dessa classe e injeta automaticamente todos os mocks criados nela
@@ -75,11 +83,38 @@ public class ProductServiceTests {
         productDTOWithIdNullAndCategoryDTO = ProductFactory                                              // ProductDTO com Id null e CategoryDTO existente
             .createDTOWithCategoryDTO(null, existingCategoryId);
 
+        page = new PageImpl<>(List.of(product));
+        pageable = PageRequest.of(0, 10);
+
     }
 
 
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
+
+
+    @Test  //  <findAllPaged> deve <RetornarPage> [quando <>]
+    public void findAllPagedShouldReturnPage(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(repository.findAll(Mockito.any(Pageable.class))).thenReturn(page); // repository.findAll → deve retornar um Page quando receber qualquer objeto do tipo Pageable
+
+
+//      -> Act: execute as ações necessárias
+        Page<ProductDTO> result = service.findAllPaged(pageable);
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertNotNull(result);
+        Assertions.assertFalse(result.isEmpty());
+        Assertions.assertEquals(1, result.getTotalElements());
+
+        Mockito.verify( // garante que o método 'repository.findAll' que está dentro do 'service.findAllPaged' tenha sido chamado exatamente 1 vez
+            repository,
+            Mockito.times(1)
+        ).findAll(pageable);
+    }
 
 
     @Test  //  <insert> deve <PersistirObjeto> [quando <IdEhNull>]
