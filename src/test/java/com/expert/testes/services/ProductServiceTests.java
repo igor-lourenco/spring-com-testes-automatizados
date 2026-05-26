@@ -117,6 +117,32 @@ public class ProductServiceTests {
     }
 
 
+    @Test  //  <findById> deve <RetornarProductDTO> [quando <IdExistir>]
+    public void findByIdShouldReturnProductDTOWhenIdExists(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(repository.findById(existingId)).thenReturn(Optional.of(productWithCategory)); // repository.findById → deve retornar Optional de Product quando id existir
+
+
+//      -> Act: execute as ações necessárias
+        ProductDTO productDTO = service.findById(existingId);
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertNotNull(productDTO);
+        Assertions.assertEquals(1, productDTO.id());
+        Assertions.assertEquals(productWithCategory.getCategories().size(), productDTO.categoryDTOS().size()
+        );
+
+
+        Mockito.verify( // garante que o método 'repository.findById' que está dentro do 'service.findById' tenha sido chamado exatamente 1 vez
+            repository,
+            Mockito.times(1)
+        ).findById(existingId);
+    }
+
+
     @Test  //  <insert> deve <PersistirObjeto> [quando <IdEhNull>]
     public void insertShouldPersistObjectWhenIdIsNull(){
 //      -> Padrão AAA
