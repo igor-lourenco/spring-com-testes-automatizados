@@ -2,6 +2,7 @@ package com.expert.testes.controllers;
 
 import com.expert.testes.DTOs.ProductDTO;
 import com.expert.testes.services.ProductService;
+import com.expert.testes.services.exceptions.EntidadeNotFoundException;
 import com.expert.testes.utils.ProductFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,7 +55,8 @@ public class ProductControllerTests {
 //      -> Padrão AAA
 
 //   	-> Arrange: instancie os objetos necessários
-        Mockito.when(service.findAllPaged(Mockito.any())).thenReturn(page); // service.findAllPaged → deve retornar um Page de ProductDTO
+        Mockito.when(service.findAllPaged(Mockito.any()))
+            .thenReturn(page); // service.findAllPaged → deve retornar um Page de ProductDTO
 
 
 //      -> Act: execute as ações necessárias
@@ -72,7 +74,8 @@ public class ProductControllerTests {
 //      -> Padrão AAA
 
 //   	-> Arrange: instancie os objetos necessários
-        Mockito.when(service.findById(existingId)).thenReturn(productDTOWithCategoryDTOEmpty); // service.findById → deve retornar um ProductDTO quando id existir
+        Mockito.when(service.findById(existingId))
+            .thenReturn(productDTOWithCategoryDTOEmpty); // service.findById → deve retornar um ProductDTO quando id existir
 
 
 //      -> Act: execute as ações necessárias
@@ -85,5 +88,24 @@ public class ProductControllerTests {
         result.andExpect(MockMvcResultMatchers.status().isOk());
         result.andExpect(MockMvcResultMatchers.jsonPath("$.id").exists()); // json de resposta tem que ter o campo id
         result.andExpect(MockMvcResultMatchers.jsonPath("$.name").exists()); // json de resposta tem que ter o campo name
+    }
+
+    @Test  //  <findById> deve <RetornarStatusNotFound> [quando <IDNaoExistir>]
+    public void findByIdShouldReturnStatusNotFoundWhenIdDoesNotExists() throws Exception {
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(service.findById(nonExistingId))
+            .thenThrow(EntidadeNotFoundException.class); // service.findById → deve lançar exception quando id não existir
+
+
+//      -> Act: execute as ações necessárias
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
+            .get("/v1/products/{id}", nonExistingId)
+            .accept(MediaType.APPLICATION_JSON));
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        result.andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 }
