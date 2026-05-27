@@ -191,9 +191,9 @@ public class ProductServiceTests {
         ).getReferenceById(existingCategoryId);
 
         Mockito.verify( // garante que o método 'repository.save' que está dentro do 'service.insert' não tenha sido chamado
-                repository,
-                Mockito.times(1))
-            .save(Mockito.any(Product.class));
+            repository,
+            Mockito.times(1))
+        .save(Mockito.any(Product.class));
     }
 
 
