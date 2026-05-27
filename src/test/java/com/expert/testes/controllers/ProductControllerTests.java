@@ -26,10 +26,13 @@ public class ProductControllerTests {
     private long existingId;
     private long nonExistingId;
     private long nonExistingCategoryId;
+    private long existingCategoryId;
+
 
     private ProductDTO productDTOWithCategoryDTOEmpty;       // ProductDTO com lista de CategoryDTO vazia
     private PageImpl<ProductDTO> page;
     private ProductDTO productDTOWithNonExistingCategoryId;  // ProductDTO com CategoryDTO não existente
+    private ProductDTO productDTOWithCategoryDTO;            // ProductDTO com CategoryDTO existente
 
 
     @Autowired
@@ -46,10 +49,14 @@ public class ProductControllerTests {
         existingId = 1L;
         nonExistingId = 999L;
         nonExistingCategoryId = 999L;
+        existingCategoryId = 1L;
 
         productDTOWithCategoryDTOEmpty = ProductFactory.createDTOWithoutCategory();   // ProductDTO com lista de CategoryDTO vazia
         productDTOWithNonExistingCategoryId = ProductFactory                          // ProductDTO com CategoryDTO não existente
             .createDTOWithCategoryDTO(existingId, nonExistingCategoryId);
+        productDTOWithCategoryDTO = ProductFactory.                                   // ProductDTO com CategoryDTO existente
+            createDTOWithCategoryDTO(existingId, existingCategoryId);
+
 
         page = new PageImpl<>(List.of(productDTOWithCategoryDTOEmpty));
     }
@@ -164,5 +171,31 @@ public class ProductControllerTests {
 
 //      -> Assert: declare o que deveria acontecer (resultado esperado)
         result.andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+
+    @Test  //  <update> deve <RetornarProductDTO> [quando <IdExistir>]
+    public void updateShouldReturnProductDTOWhenIdExists() throws Exception {
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(service.update(Mockito.eq(existingId), Mockito.any()))
+            .thenReturn(productDTOWithCategoryDTO);
+//            .thenThrow(EntidadeNotFoundException.class); // service.findById → deve lançar exception quando id não existir
+
+
+//      -> Act: execute as ações necessárias
+        String jsonBody = objectMapper.writeValueAsString(productDTOWithCategoryDTO);
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
+            .put("/v1/products/{id}", existingId)
+            .content(jsonBody)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON));
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        result.andExpect(MockMvcResultMatchers.status().isOk());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.id").exists()); // json de resposta tem que ter o campo id
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.name").exists()); // json de resposta tem que ter o campo name
     }
 }
