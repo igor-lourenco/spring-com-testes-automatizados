@@ -4,6 +4,7 @@ import com.expert.testes.DTOs.ProductDTO;
 import com.expert.testes.services.ProductService;
 import com.expert.testes.services.exceptions.EntidadeNotFoundException;
 import com.expert.testes.utils.ProductFactory;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -180,8 +181,7 @@ public class ProductControllerTests {
 
 //   	-> Arrange: instancie os objetos necessários
         Mockito.when(service.update(Mockito.eq(existingId), Mockito.any()))
-            .thenReturn(productDTOWithCategoryDTO);
-//            .thenThrow(EntidadeNotFoundException.class); // service.findById → deve lançar exception quando id não existir
+            .thenReturn(productDTOWithCategoryDTO);// service.update → deve retornar um ProductDTO salvo no banco de dados
 
 
 //      -> Act: execute as ações necessárias
@@ -197,5 +197,30 @@ public class ProductControllerTests {
         result.andExpect(MockMvcResultMatchers.status().isOk());
         result.andExpect(MockMvcResultMatchers.jsonPath("$.id").exists()); // json de resposta tem que ter o campo id
         result.andExpect(MockMvcResultMatchers.jsonPath("$.name").exists()); // json de resposta tem que ter o campo name
+    }
+
+
+    @Test  //  <update> deve <RetornarStatusNotFound> [quando <IdNaoExistir>]
+    public void updateShouldReturnStatusNotFoundWhenIdDoesNotExists() throws Exception {
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(service.update(Mockito.eq(nonExistingId), Mockito.any()))
+            .thenThrow(new EntidadeNotFoundException("Product não encontrado: " + nonExistingId)); // service.update → deve lançar exception quando id não existir
+
+
+//      -> Act: execute as ações necessárias
+        String jsonBody = objectMapper.writeValueAsString(productDTOWithCategoryDTO);
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
+            .put("/v1/products/{id}", nonExistingId)
+            .content(jsonBody)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON));
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        result.andExpect(MockMvcResultMatchers.status().isNotFound());
+        result.andExpect(
+            MockMvcResultMatchers.content().string(Matchers.containsString("Product não encontrado")));
     }
 }
