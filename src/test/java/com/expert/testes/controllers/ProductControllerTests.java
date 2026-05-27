@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
@@ -34,6 +35,8 @@ public class ProductControllerTests {
     @MockitoBean // Usa quando a classe de teste carrega o contexto da aplicação e precisa mockar algum bean do sistema.
     private ProductService service;
 
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @BeforeEach // Preparação antes de cada teste da classe
     void setUp() throws Exception {
@@ -107,5 +110,30 @@ public class ProductControllerTests {
 
 //      -> Assert: declare o que deveria acontecer (resultado esperado)
         result.andExpect(MockMvcResultMatchers.status().isNotFound());
+    }
+
+    @Test  //  <insert> deve <RetornarStatusCreated> [quando <>]
+    public void insertShouldReturnStatusCreated() throws Exception {
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(service.insert(Mockito.any()))
+            .thenReturn(productDTOWithCategoryDTOEmpty); // service.insert → deve retornar um ProductDTO salvo no banco de dados
+
+
+//      -> Act: execute as ações necessárias
+        String jsonBody = objectMapper.writeValueAsString(productDTOWithCategoryDTOEmpty);
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
+            .post("/v1/products")
+            .content(jsonBody)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON));
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        result.andExpect(MockMvcResultMatchers.status().isCreated());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.id").exists()); // json de resposta tem que ter o campo id
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.name").exists()); // json de resposta tem que ter o campo name
+        result.andExpect(MockMvcResultMatchers.header().exists("Location")); // Location do header tem que existir
     }
 }
