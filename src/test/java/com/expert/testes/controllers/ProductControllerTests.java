@@ -23,6 +23,8 @@ public class ProductControllerTests {
 
     private ProductDTO productDTOWithCategoryDTOEmpty;       // ProductDTO com lista de CategoryDTO vazia
     private PageImpl<ProductDTO> page;
+    private long existingId;
+    private long nonExistingId;
 
 
     @Autowired
@@ -34,6 +36,9 @@ public class ProductControllerTests {
 
     @BeforeEach // Preparação antes de cada teste da classe
     void setUp() throws Exception {
+        existingId = 1L;
+        nonExistingId = 999L;
+
         productDTOWithCategoryDTOEmpty = ProductFactory.createDTOWithoutCategory();   // ProductDTO com lista de CategoryDTO vazia
 
         page = new PageImpl<>(List.of(productDTOWithCategoryDTOEmpty));
@@ -41,7 +46,7 @@ public class ProductControllerTests {
 
 
 
-    //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
+//	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
 
 
     @Test  //  <findAllPaged> deve <RetornarPage> [quando <>]
@@ -60,5 +65,25 @@ public class ProductControllerTests {
 
 //      -> Assert: declare o que deveria acontecer (resultado esperado)
         result.andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test  //  <findById> deve <RetornarProductDTO> [quando <IDExistir>]
+    public void findByIdShouldReturnProductDTOWhenIdExists() throws Exception {
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(service.findById(existingId)).thenReturn(productDTOWithCategoryDTOEmpty); // service.findById → deve retornar um ProductDTO quando id existir
+
+
+//      -> Act: execute as ações necessárias
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
+            .get("/v1/products/{id}", existingId)
+            .accept(MediaType.APPLICATION_JSON));
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        result.andExpect(MockMvcResultMatchers.status().isOk());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.id").exists()); // json de resposta tem que ter o campo id
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.name").exists()); // json de resposta tem que ter o campo name
     }
 }

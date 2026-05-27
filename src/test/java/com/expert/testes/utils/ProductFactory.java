@@ -26,6 +26,7 @@ public class ProductFactory {
 
     public static Product createWithoutCategory(){
         return Product.builder()
+            .id(1L)
             .name("Phone")
             .description("Good Phone")
             .price(new BigDecimal(800.0))
