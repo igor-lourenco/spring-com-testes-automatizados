@@ -26,7 +26,17 @@ public class ProductFactory {
 
     public static Product createWithoutCategory(){
         return Product.builder()
-            .id(1L)
+            .name("Phone")
+            .description("Good Phone")
+            .price(new BigDecimal(800.0))
+            .imgUrl("https://img.com/phone.png")
+            .categories(new HashSet<>())
+            .build();
+    }
+
+    public static Product createWithoutCategory(Long productId){
+        return Product.builder()
+            .id(productId)
             .name("Phone")
             .description("Good Phone")
             .price(new BigDecimal(800.0))
@@ -37,6 +47,11 @@ public class ProductFactory {
 
     public static ProductDTO createDTOWithoutCategory(){
         Product product = createWithoutCategory();
+        return new ProductDTO(product, product.getCategories());
+    }
+
+    public static ProductDTO createDTOWithoutCategory(Long productId){
+        Product product = createWithoutCategory(productId);
         return new ProductDTO(product, product.getCategories());
     }
 

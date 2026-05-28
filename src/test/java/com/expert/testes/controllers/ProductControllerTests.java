@@ -52,7 +52,7 @@ public class ProductControllerTests {
         nonExistingCategoryId = 999L;
         existingCategoryId = 1L;
 
-        productDTOWithCategoryDTOEmpty = ProductFactory.createDTOWithoutCategory();   // ProductDTO com lista de CategoryDTO vazia
+        productDTOWithCategoryDTOEmpty = ProductFactory.createDTOWithoutCategory(existingId);   // ProductDTO com lista de CategoryDTO vazia
         productDTOWithNonExistingCategoryId = ProductFactory                          // ProductDTO com CategoryDTO não existente
             .createDTOWithCategoryDTO(existingId, nonExistingCategoryId);
         productDTOWithCategoryDTO = ProductFactory.                                   // ProductDTO com CategoryDTO existente
@@ -86,6 +86,7 @@ public class ProductControllerTests {
         result.andExpect(MockMvcResultMatchers.status().isOk());
     }
 
+
     @Test  //  <findById> deve <RetornarProductDTO> [quando <IDExistir>]
     public void findByIdShouldReturnProductDTOWhenIdExists() throws Exception {
 //      -> Padrão AAA
@@ -107,6 +108,7 @@ public class ProductControllerTests {
         result.andExpect(MockMvcResultMatchers.jsonPath("$.name").exists()); // json de resposta tem que ter o campo name
     }
 
+
     @Test  //  <findById> deve <RetornarStatusNotFound> [quando <IDNaoExistir>]
     public void findByIdShouldReturnStatusNotFoundWhenIdDoesNotExists() throws Exception {
 //      -> Padrão AAA
@@ -125,6 +127,7 @@ public class ProductControllerTests {
 //      -> Assert: declare o que deveria acontecer (resultado esperado)
         result.andExpect(MockMvcResultMatchers.status().isNotFound());
     }
+
 
     @Test  //  <insert> deve <RetornarStatusCreated> [quando <>]
     public void insertShouldReturnStatusCreated() throws Exception {
@@ -222,5 +225,25 @@ public class ProductControllerTests {
         result.andExpect(MockMvcResultMatchers.status().isNotFound());
         result.andExpect(
             MockMvcResultMatchers.content().string(Matchers.containsString("Product não encontrado")));
+    }
+
+
+    @Test  //  <delete> deve <RetornarStatusNoContent> [quando <IdExistir>]
+    public void deleteShouldReturnStatusNoContentWhenIdExists() throws Exception {
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.doNothing() // service.delete → não deve retornar nada quando o id existir
+            .when(service).delete(existingId);
+
+
+//      -> Act: execute as ações necessárias
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
+            .delete("/v1/products/{id}", existingId));
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        result.andExpect(MockMvcResultMatchers.status().isNoContent());
+        Mockito.verify(service).delete(existingId); // garante que o método 'service.delete' tenha sido chamado
     }
 }

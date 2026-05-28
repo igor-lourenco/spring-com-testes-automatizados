@@ -95,7 +95,7 @@ public class ProductController {
 
         service.delete(id);
 
-        log.info("RESPONSE - PUT [delete]");
+        log.info("RESPONSE - DELETE [delete]");
     }
 
 
