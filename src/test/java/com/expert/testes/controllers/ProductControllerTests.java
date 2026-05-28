@@ -246,4 +246,27 @@ public class ProductControllerTests {
         result.andExpect(MockMvcResultMatchers.status().isNoContent());
         Mockito.verify(service).delete(existingId); // garante que o método 'service.delete' tenha sido chamado
     }
+
+
+    @Test  //  <delete> deve <RetornarStatusNotFound> [quando <IdNaoExistir>]
+    public void deleteShouldReturnStatusNotFoundWhenIdDoesNotExist() throws Exception {
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.doThrow(new EntidadeNotFoundException("Product não encontrado: " + nonExistingId)) // service.delete → deve lançar exception quando id não existir
+            .when(service).delete(nonExistingId);
+
+
+//      -> Act: execute as ações necessárias
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
+            .delete("/v1/products/{id}", nonExistingId));
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        result.andExpect(MockMvcResultMatchers.status().isNotFound());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.message")
+            .value("Product não encontrado: " + nonExistingId));
+
+        Mockito.verify(service).delete(nonExistingId); // garante que o método 'service.delete' tenha sido chamado
+    }
 }
