@@ -33,7 +33,7 @@ public class ControllerExceptionHandler {
     public ResponseEntity<StandardError> handleDatabaseException(DatabaseException e, WebRequest request){
         log.error("ERROR [handleDatabaseException] EXCEPTION :: {}, MENSAGEM :: {}", e.getClass().getSimpleName(), e.getMessage());
 
-        HttpStatus status = HttpStatus.BAD_REQUEST;
+        HttpStatus status = HttpStatus.CONFLICT;
         String path = ((ServletWebRequest) request).getRequest().getRequestURI();
 
         StandardError error = StandardError

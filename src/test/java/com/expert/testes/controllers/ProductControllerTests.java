@@ -2,6 +2,7 @@ package com.expert.testes.controllers;
 
 import com.expert.testes.DTOs.ProductDTO;
 import com.expert.testes.services.ProductService;
+import com.expert.testes.services.exceptions.DatabaseException;
 import com.expert.testes.services.exceptions.EntidadeNotFoundException;
 import com.expert.testes.utils.ProductFactory;
 import org.hamcrest.Matchers;
@@ -28,6 +29,7 @@ public class ProductControllerTests {
     private long nonExistingId;
     private long nonExistingCategoryId;
     private long existingCategoryId;
+    private long dependentId;
 
 
     private ProductDTO productDTOWithCategoryDTOEmpty;       // ProductDTO com lista de CategoryDTO vazia
@@ -48,9 +50,11 @@ public class ProductControllerTests {
     @BeforeEach // Preparação antes de cada teste da classe
     void setUp() throws Exception {
         existingId = 1L;
+        dependentId = 2L;
         nonExistingId = 999L;
         nonExistingCategoryId = 999L;
         existingCategoryId = 1L;
+
 
         productDTOWithCategoryDTOEmpty = ProductFactory.createDTOWithoutCategory(existingId);   // ProductDTO com lista de CategoryDTO vazia
         productDTOWithNonExistingCategoryId = ProductFactory                          // ProductDTO com CategoryDTO não existente
@@ -268,5 +272,28 @@ public class ProductControllerTests {
             .value("Product não encontrado: " + nonExistingId));
 
         Mockito.verify(service).delete(nonExistingId); // garante que o método 'service.delete' tenha sido chamado
+    }
+
+
+    @Test  //  <delete> deve <RetornarStatusNotFound> [quando <IdNaoExistir>]
+    public void deleteShouldReturnStatusConflictWhenItIsDependentId() throws Exception {
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.doThrow(new DatabaseException("Falha de integridade referencial")) // service.delete → deve lançar exception quando id for dependente
+            .when(service).delete(dependentId);
+
+
+//      -> Act: execute as ações necessárias
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
+            .delete("/v1/products/{id}", dependentId));
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        result.andExpect(MockMvcResultMatchers.status().isConflict());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.message")
+            .value("Falha de integridade referencial"));
+
+        Mockito.verify(service).delete(dependentId); // garante que o método 'service.delete' tenha sido chamado
     }
 }
