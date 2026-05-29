@@ -111,6 +111,7 @@ public class ProductService {
             new EntidadeNotFoundException("Product não encontrado: " + id));
     }
 
+
     private void convertToProduct(ProductDTO productDTO, Product product) {
         product.setName(productDTO.name());
         product.setDescription(productDTO.description());

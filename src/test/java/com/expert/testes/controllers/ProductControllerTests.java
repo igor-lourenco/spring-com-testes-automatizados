@@ -49,6 +49,7 @@ public class ProductControllerTests {
 
     @BeforeEach // Preparação antes de cada teste da classe
     void setUp() throws Exception {
+//      Os valores não nenhum vínculo com o banco de dados, são apenas valores de controle para simulação
         existingId = 1L;
         dependentId = 2L;
         nonExistingId = 999L;
