@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+
 @SpringBootTest // Carrega o contexto da aplicação (teste de integração)
 @Transactional //  para dar rollback automático após cada teste e isolamento total
 public class ProductServiceIntegrationTests {
@@ -40,6 +42,29 @@ public class ProductServiceIntegrationTests {
 
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
+
+    @Test   //  <update> deve <AtualizarEntidade> [quando <IdExistir>]
+    public void updateShouldUpdateEntidadeWhenIdExists() {
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        ProductDTO productDTOWithExistingCategoryDTO = ProductFactory.createDTOWithCategoryDTO(existingId, existingCategoryId);
+        String expectedName = productDTOWithExistingCategoryDTO.name();
+        BigDecimal expectedPrice = productDTOWithExistingCategoryDTO.price();
+
+
+//      -> Act: execute as ações necessárias
+        ProductDTO result = service.update(existingId, productDTOWithExistingCategoryDTO);
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(existingId, result.id());
+        Assertions.assertEquals(expectedName, result.name());
+        Assertions.assertEquals(expectedPrice, result.price());
+        Assertions.assertEquals(existingCategoryId, result.categoryDTOS().get(0).id());
+    }
+
 
     @Test  //  <update> deve <LancarEntidadeNotFoundException> [quando <CategoryIdNaoExistir>]
     public void updateShouldThrowEntidadeNotFoundExceptionWhenCategoryIdDoesNotExist(){
