@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-
 @SpringBootTest // Carrega o contexto da aplicação (teste de integração)
 @Transactional //  para dar rollback automático após cada teste e isolamento total
 public class ProductServiceIntegrationTests {
@@ -43,6 +41,23 @@ public class ProductServiceIntegrationTests {
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
 
+    @Test  //  <update> deve <LancarEntidadeNotFoundException> [quando <CategoryIdNaoExistir>]
+    public void updateShouldThrowEntidadeNotFoundExceptionWhenCategoryIdDoesNotExist(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        ProductDTO productDTOWithNonExistingCategoryDTO = ProductFactory.createDTOWithCategoryDTO(existingId, nonExistingCategoryId);
+
+
+//      -> Act: execute as ações necessárias
+        EntidadeNotFoundException ex = Assertions.assertThrows(EntidadeNotFoundException.class, () -> {
+            service.update(existingId, productDTOWithNonExistingCategoryDTO);
+        });
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertEquals("Category não encontrado: " + nonExistingCategoryId + ", para associar com Product", ex.getMessage());
+    }
 
 
     @Test  //  <update> deve <LancarEntidadeNotFoundException> [quando <IdNaoExistir>]
@@ -63,6 +78,7 @@ public class ProductServiceIntegrationTests {
         Assertions.assertEquals("Product não encontrado: " + nonExistingId, ex.getMessage());
     }
 
+
     @Test  //  <delete> deve <DeletarProduct> [quando <IdExistir>]
     public void deleteShouldDeleteProductWhenIdExist(){
 //      -> Padrão AAA
@@ -79,6 +95,7 @@ public class ProductServiceIntegrationTests {
         Assertions.assertFalse(repository.existsById(existingId));
         Assertions.assertEquals(countTotalProducts - 1, repository.count());
     }
+
 
     @Test  //  <delete> deve <LancarEntidadeNotFoundException> [quando <IdNaoExistir>]
     public void deleteShouldThrowEntidadeNotFoundExceptionWhenIdDoesNotExist(){
