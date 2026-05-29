@@ -1,6 +1,7 @@
 package com.expert.testes.services;
 
 import com.expert.testes.repositories.ProductRepository;
+import com.expert.testes.services.exceptions.EntidadeNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductServiceIntegrationTests {
 
     private long existingId;
+    private long nonExistingId;
 
     @Autowired
     private ProductService service;
@@ -25,6 +27,7 @@ public class ProductServiceIntegrationTests {
     void setUp() throws Exception{
 //      Os valores agora tem que ser reais porque vai ser testado o banco de dados
         existingId = 1L;
+        nonExistingId = 999L;
 
     }
 
@@ -50,6 +53,23 @@ public class ProductServiceIntegrationTests {
         Assertions.assertEquals(countTotalProducts - 1, repository.count());
     }
 
+    @Test  //  <delete> deve <LancarEntidadeNotFoundException> [quando <IdNaoExistir>]
+    public void deleteShouldThrowEntidadeNotFoundExceptionWhenIdDoesNotExist(){
+//      -> Padrão AAA
 
+//   	-> Arrange: instancie os objetos necessários
+        long countTotalProducts = repository.count();
+
+
+//      -> Act: execute as ações necessárias
+        EntidadeNotFoundException ex = Assertions.assertThrows(EntidadeNotFoundException.class, () -> {
+            service.delete(nonExistingId);
+        });
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertEquals("Product não encontrado: " + nonExistingId, ex.getMessage());
+        Assertions.assertEquals(countTotalProducts, repository.count());
+    }
 
 }
