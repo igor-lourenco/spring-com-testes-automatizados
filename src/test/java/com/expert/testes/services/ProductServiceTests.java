@@ -228,7 +228,7 @@ public class ProductServiceTests {
     }
 
 
-    @Test  //  <update> deve <AtualizarObjeto> [quando <IdExistir>]
+    @Test  //  <update> deve <AtualizarEntidade> [quando <IdExistir>]
     public void updateShouldUpdateEntidadeWhenIdExists(){
 //      -> Padrão AAA
 
