@@ -32,7 +32,7 @@ public class ProductServiceIntegrationTests {
 
     @BeforeEach // Preparação antes de cada teste da classe
     void setUp() throws Exception{
-//      Os valores agora tem que ser reais porque vai ser testado o banco de dados
+//      Os valores agora têm que ser reais porque vai ser testado o banco de dados
         existingId = 1L;
         nonExistingId = 999L;
         nonExistingCategoryId = 999L;
@@ -42,6 +42,29 @@ public class ProductServiceIntegrationTests {
 
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
+
+
+
+    @Test  //  <insert> deve <LancarEntidadeNotFoundException> [quando <CategoryIdNaoExistir>]
+    public void insertShouldThrowEntidadeNotFoundExceptionWhenCategoryIdDoesNotExists(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        long countTotalProducts = repository.count();
+        ProductDTO productDTOWithNonExistingCategoryDTO = ProductFactory.createDTOWithCategoryDTO(null, nonExistingCategoryId);
+
+
+//      -> Act: execute as ações necessárias
+        EntidadeNotFoundException ex = Assertions.assertThrows(EntidadeNotFoundException.class, () -> {
+            service.insert(productDTOWithNonExistingCategoryDTO);
+        });
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertEquals("Category não encontrado: " + nonExistingCategoryId + ", para associar com Product", ex.getMessage());
+        Assertions.assertEquals(countTotalProducts, repository.count());
+    }
+
 
     @Test   //  <update> deve <AtualizarEntidade> [quando <IdExistir>]
     public void updateShouldUpdateEntidadeWhenIdExists() {
