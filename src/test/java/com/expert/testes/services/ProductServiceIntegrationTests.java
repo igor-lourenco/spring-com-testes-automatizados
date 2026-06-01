@@ -43,6 +43,28 @@ public class ProductServiceIntegrationTests {
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
 
+
+
+    @Test  //  <findById> deve <LancarEntidadeNotFoundException> [quando <IdNaoExistir>]
+    public void findByIdShouldThrowEntidadeNotFoundExceptionWhenIdDoesNotExist(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+
+
+//      -> Act: execute as ações necessárias
+        EntidadeNotFoundException ex = Assertions.assertThrows(EntidadeNotFoundException.class, () -> {
+            service.findById(nonExistingId);
+        });
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertNotNull(ex);
+        Assertions.assertTrue(ex.getMessage().contains("Product não encontrado"));
+        Assertions.assertTrue(ex.getMessage().contains(String.valueOf(nonExistingId)));
+    }
+
+
     @Test  //  <insert> deve <PersistirObjeto> [quando <IdEhNull>]
     public void insertShouldPersistObjectWhenIdIsNull(){
 //      -> Padrão AAA
