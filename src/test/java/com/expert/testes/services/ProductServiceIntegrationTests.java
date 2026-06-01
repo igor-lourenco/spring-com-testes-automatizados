@@ -43,6 +43,25 @@ public class ProductServiceIntegrationTests {
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
 
+    @Test  //  <insert> deve <PersistirObjeto> [quando <IdEhNull>]
+    public void insertShouldPersistObjectWhenIdIsNull(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        long countTotalProducts = repository.count();
+        ProductDTO productDTOWithNonExistingCategoryDTO = ProductFactory.createDTOWithCategoryDTO(null, existingCategoryId);
+
+
+//      -> Act: execute as ações necessárias
+        ProductDTO productDTO = service.insert(productDTOWithNonExistingCategoryDTO);
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertNotNull(productDTO);
+        Assertions.assertEquals(countTotalProducts + 1, repository.count());
+        Assertions.assertFalse(productDTO.categoryDTOS().isEmpty());
+        Assertions.assertEquals(existingCategoryId, productDTO.categoryDTOS().get(0).id());
+    }
 
 
     @Test  //  <insert> deve <LancarEntidadeNotFoundException> [quando <CategoryIdNaoExistir>]
