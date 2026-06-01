@@ -43,6 +43,23 @@ public class ProductServiceIntegrationTests {
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
 
+    @Test  //  <findById> deve <RetornarProductDTO> [quando <IdExistir>]
+    public void findByIdShouldReturnProductDTOWhenIdExist(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+
+
+//      -> Act: execute as ações necessárias
+        ProductDTO productDTO = service.findById(existingId);
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertNotNull(productDTO);
+        Assertions.assertEquals(existingId, productDTO.id());
+        Assertions.assertNotNull(productDTO.categoryDTOS());
+        Assertions.assertFalse(productDTO.categoryDTOS().isEmpty());
+    }
 
 
     @Test  //  <findById> deve <LancarEntidadeNotFoundException> [quando <IdNaoExistir>]
