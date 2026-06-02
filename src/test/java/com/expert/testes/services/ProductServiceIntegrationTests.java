@@ -9,6 +9,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -42,6 +45,22 @@ public class ProductServiceIntegrationTests {
 
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
+
+    @Test  //  <findAllPaged> deve <RetornarPageOrdenado> [quando <OrdenarPagePorNome>]
+    public void findAllPagedShouldReturnSortedPageWhenPageSortyByName(){
+
+        long countTotalProducts = repository.count();
+        PageRequest pageRequest = PageRequest.of(0, 10, Sort.by("name"));
+
+
+        Page<ProductDTO> result = service.findAllPaged(pageRequest);
+
+        Assertions.assertFalse(result.isEmpty());
+        Assertions.assertEquals(countTotalProducts, result.getTotalElements());
+        Assertions.assertEquals("Acer Aspire", result.getContent().get(0).name());
+        Assertions.assertEquals("Air Fryer", result.getContent().get(1).name());
+    }
+
 
     @Test  //  <findById> deve <RetornarProductDTO> [quando <IdExistir>]
     public void findByIdShouldReturnProductDTOWhenIdExist(){
