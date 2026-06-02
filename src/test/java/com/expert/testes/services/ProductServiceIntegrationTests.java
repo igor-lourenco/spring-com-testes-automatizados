@@ -46,6 +46,22 @@ public class ProductServiceIntegrationTests {
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
 
+
+
+    @Test  //  <findAllPaged> deve <RetornarPageVazio> [quando <PageNaoExistir>]
+    public void findAllPagedShouldReturnEmptyPageWhenPageDoesNotExist(){
+
+        long countTotalProducts = repository.count();
+        PageRequest pageRequest = PageRequest.of(50, 10);
+
+
+        Page<ProductDTO> result = service.findAllPaged(pageRequest);
+
+        Assertions.assertTrue(result.isEmpty());
+        Assertions.assertEquals(countTotalProducts, result.getTotalElements());
+    }
+
+
     @Test  //  <findAllPaged> deve <RetornarPageOrdenado> [quando <OrdenarPagePorNome>]
     public void findAllPagedShouldReturnSortedPageWhenPageSortyByName(){
 
