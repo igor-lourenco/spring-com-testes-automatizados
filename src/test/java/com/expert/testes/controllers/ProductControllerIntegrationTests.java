@@ -2,6 +2,7 @@ package com.expert.testes.controllers;
 
 import com.expert.testes.repositories.ProductRepository;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,29 @@ public class ProductControllerIntegrationTests {
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
 
+
+    @Test  //  <delete> deve <RetornarStatusNoContent> [quando <IdExistir>]
+    public void deleteShouldReturnStatusNoContentWhenIdExist() throws Exception {
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        long countTotalProducts = repository.count();
+
+
+//      -> Act: execute as ações necessárias
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
+            .delete("/v1/products/{id}", existingId)
+            .accept(MediaType.APPLICATION_JSON));
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        result.andExpect(MockMvcResultMatchers.status().isNoContent());
+        result.andExpect(MockMvcResultMatchers.content().string(""));
+
+//      opcional: para garantir se o product foi realmente deletado do banco
+        Assertions.assertEquals(countTotalProducts - 1 , repository.count());
+        Assertions.assertFalse(repository.existsById(existingId));
+    }
 
 
     @Test  //  <delete> deve <RetornarStatusNotFound> [quando <IdNaoExistir>]
