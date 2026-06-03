@@ -1,0 +1,79 @@
+package com.expert.testes.controllers;
+
+import com.expert.testes.repositories.ProductRepository;
+import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.ObjectMapper;
+
+@SpringBootTest // Carrega o contexto da aplicação (teste de integração)
+@AutoConfigureMockMvc // serve para testar API sem subir o servidor de verdade (sem Tomcat rodando na porta, por exemplo)
+@Transactional //  para dar rollback automático após cada teste e isolamento total
+public class ProductControllerIntegrationTests {
+
+    private long existingId;
+    private long nonExistingId;
+    private long nonExistingCategoryId;
+    private long existingCategoryId;
+
+
+    @Autowired
+    private MockMvc mockMvc; // serve para simular requisições HTTP sem a necessidade de subir um servidor web real (como o Tomcat)
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private ProductRepository repository;
+
+    @BeforeEach // Preparação antes de cada teste da classe
+    void setUp() throws Exception {
+//      Os valores agora têm que ser reais porque vai ser testado o banco de dados
+        existingId = 1L;
+        nonExistingId = 999L;
+        nonExistingCategoryId = 999L;
+        existingCategoryId = 1L;
+
+    }
+
+
+
+//	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
+
+
+
+    @Test  //  <delete> deve <RetornarStatusNotFound> [quando <IdNaoExistir>]
+    public void deleteShouldReturnStatusNotFoundWhenIdDoesNotExist() throws Exception {
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        int expectedStatus = 404;
+        String expectedError = "Recurso não encontrado";
+        String expectedMessage = "Product não encontrado";
+
+
+//      -> Act: execute as ações necessárias
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
+            .delete("/v1/products/{id}", nonExistingId)
+            .accept(MediaType.APPLICATION_JSON));
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        result.andExpect(MockMvcResultMatchers.status().isNotFound());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.status").value(expectedStatus));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.error").value(expectedError));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.message")
+            .value(Matchers.containsString(expectedMessage)));
+
+
+    }
+}
