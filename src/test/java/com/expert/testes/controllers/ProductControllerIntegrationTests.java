@@ -1,6 +1,8 @@
 package com.expert.testes.controllers;
 
+import com.expert.testes.DTOs.ProductDTO;
 import com.expert.testes.repositories.ProductRepository;
+import com.expert.testes.utils.ProductFactory;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,6 +51,35 @@ public class ProductControllerIntegrationTests {
 
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
+
+
+    @Test  //  <update> deve <RetornarStatusNotFound> [quando <CategoryIdNaoExistir>]
+    public void updateShouldReturnStatusNotFoundWhenCategoryIdDoesNotExist() throws Exception {
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        int expectedStatus = 404;
+        String expectedError = "Recurso não encontrado";
+        String expectedMessage = "Category não encontrado";
+
+        ProductDTO productDTO = ProductFactory.createDTOWithCategoryDTO(existingId, nonExistingCategoryId);
+
+//      -> Act: execute as ações necessárias
+        String jsonBody = objectMapper.writeValueAsString(productDTO);
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
+            .put("/v1/products/{id}", existingId)
+            .content(jsonBody)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON));
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        result.andExpect(MockMvcResultMatchers.status().isNotFound());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.status").value(expectedStatus));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.error").value(expectedError));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.message")
+            .value(Matchers.containsString(expectedMessage)));
+    }
 
 
     @Test  //  <delete> deve <RetornarStatusNoContent> [quando <IdExistir>]
