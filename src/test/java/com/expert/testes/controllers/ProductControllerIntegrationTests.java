@@ -53,6 +53,40 @@ public class ProductControllerIntegrationTests {
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
 
 
+    @Test  //  <insert> deve <RetornarStatusCreated> [quando <>]
+    public void insertShouldReturnStatusCreated() throws Exception {
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        ProductDTO productDTO = ProductFactory.createDTOWithCategoryDTO(null, existingCategoryId);
+
+        String expectedName = productDTO.name();
+        String expectedDescription = productDTO.description();
+        long countTotalProducts = repository.count();
+
+
+//      -> Act: execute as ações necessárias
+        String jsonBody = objectMapper.writeValueAsString(productDTO);
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
+            .post("/v1/products")
+            .content(jsonBody)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON));
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        result.andExpect(MockMvcResultMatchers.status().isCreated());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.id").exists()); // json de resposta tem que ter o campo id
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(expectedName));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.description").value(expectedDescription));
+        result.andExpect(MockMvcResultMatchers.header().exists("Location")); // Location do header tem que existir
+
+        //      opcional: para garantir se o product foi realmente inserido do banco
+        Assertions.assertEquals(countTotalProducts + 1 , repository.count());
+        Assertions.assertTrue(repository.existsById(existingId));
+    }
+
+
     @Test  //  <insert> deve <RetornarStatusNotFound> [quando <CategoryIdNaoExistir>]
     public void insertShouldReturnStatusNotFoundWhenCategoryIdDoesNotExist() throws Exception {
 //      -> Padrão AAA
