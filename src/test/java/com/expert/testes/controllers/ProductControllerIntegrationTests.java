@@ -53,6 +53,34 @@ public class ProductControllerIntegrationTests {
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
 
 
+    @Test  //  <insert> deve <RetornarStatusNotFound> [quando <CategoryIdNaoExistir>]
+    public void insertShouldReturnStatusNotFoundWhenCategoryIdDoesNotExist() throws Exception {
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        int expectedStatus = 404;
+        String expectedError = "Recurso não encontrado";
+        String expectedMessage = "Category não encontrado";
+
+        ProductDTO productDTO = ProductFactory.createDTOWithCategoryDTO(null, nonExistingCategoryId);
+
+//      -> Act: execute as ações necessárias
+        String jsonBody = objectMapper.writeValueAsString(productDTO);
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
+            .post("/v1/products")
+            .content(jsonBody)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON));
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        result.andExpect(MockMvcResultMatchers.status().isNotFound());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.status").value(expectedStatus));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.error").value(expectedError));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.message")
+            .value(Matchers.containsString(expectedMessage)));
+    }
+
 
     @Test  //  <update> deve <RetornarProductDTO> [quando <IdExistir>]
     public void updateShouldReturnProductDTOWhenIdExist() throws Exception {
