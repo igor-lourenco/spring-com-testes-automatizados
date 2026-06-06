@@ -52,6 +52,35 @@ public class ProductControllerIntegrationTests {
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
 
+
+    @Test  //  <findAllPaged> deve <RetornarPage> [quando <>]
+    public void findAllPagedShouldReturnPage() throws Exception {
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        long countTotalProducts = repository.count();
+        int size = 5;
+        long expectedId = 29L;
+        String expectedName = "Acer Aspire";
+
+
+//      -> Act: execute as ações necessárias
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
+            .get("/v1/products/page?page=0&size=5&sort=name,ASC")
+            .accept(MediaType.APPLICATION_JSON));
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        result.andExpect(MockMvcResultMatchers.status().isOk());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.content").exists());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.content[0].id").value(expectedId));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.content[0].name").value(expectedName));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.size").value(size));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.totalElements").value(countTotalProducts));
+
+    }
+
+
     @Test  //  <findById> deve <RetornarProductDTO> [quando <IDExistir>]
     public void findByIdShouldReturnProductDTOWhenIdExist() throws Exception {
 //      -> Padrão AAA

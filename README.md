@@ -57,3 +57,29 @@
 #### Previsibilidade
 -	O resultado de um teste deve ser sempre o mesmo para os mesmos dados
 -	Não faça o resultado depender de coisas que variam, tais como timestamp atual e valores aleatórios.
+
+##
+### Annotations usadas nas classes de teste
+
+| Annotation | Descrição |
+| :--- | :--- |
+| `@SpringBootTest` | Carrega o contexto da aplicação (teste de integração) |
+| `@SpringBootTest` `@AutoConfigureMockMvc` | Carrega o contexto da aplicação (teste de integração & web) Trata as requisições sem subir o servidor |
+| `@WebMvcTest(Classe.class)` | Carrega o contexto, porém somente da camada web (teste de unidade: controlador) |
+| `@ExtendWith(SpringExtension.class)` | Não carrega o contexto, mas permite usar os recursos do Spring com JUnit (teste de unidade: service/component) |
+| `@DataJpaTest` | Carrega somente os componentes relacionados ao Spring Data JPA. Cada teste é transacional e dá rollback ao final. (teste de unidade: repository) |
+
+##
+### Fixture
+
+Uma forma de organizar melhor o código dos testes e evitar repetições
+
+
+| JUnit 5 | JUnit 4 | Objetivo |
+| :--- | :--- | :--- |
+| `@BeforeAll` | `@BeforeClass` | Preparação antes de todos testes da classe (método estático) |
+| `@AfterAll` | `@AfterClass` | Preparação depois de todos testes da classe (método estático) |
+| `@BeforeEach` | `@Before` | Preparação antes de cada teste da classe |
+| `@AfterEach` | `@After` | Preparação depois de cada teste da classe |
+
+
