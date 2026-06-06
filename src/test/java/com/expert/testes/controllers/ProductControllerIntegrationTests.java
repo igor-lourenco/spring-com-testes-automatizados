@@ -52,6 +52,30 @@ public class ProductControllerIntegrationTests {
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
 
+    @Test  //  <findById> deve <RetornarStatusNotFound> [quando <IDNaoExistir>]
+    public void findByIdShouldReturnStatusNotFoundWhenIdDoesNotExist() throws Exception {
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        int expectedStatus = 404;
+        String expectedError = "Recurso não encontrado";
+        String expectedMessage = "Product não encontrado";
+
+
+//      -> Act: execute as ações necessárias
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
+            .get("/v1/products/{id}", nonExistingId)
+            .accept(MediaType.APPLICATION_JSON));
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        result.andExpect(MockMvcResultMatchers.status().isNotFound());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.status").value(expectedStatus));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.error").value(expectedError));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.message")
+            .value(Matchers.containsString(expectedMessage)));
+    }
+
 
     @Test  //  <insert> deve <RetornarStatusCreated> [quando <>]
     public void insertShouldReturnStatusCreated() throws Exception {
