@@ -52,6 +52,28 @@ public class ProductControllerIntegrationTests {
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
 
+    @Test  //  <findById> deve <RetornarProductDTO> [quando <IDExistir>]
+    public void findByIdShouldReturnProductDTOWhenIdExist() throws Exception {
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        String expectedName = "Microwave";
+        String expectedDescription = "800W microwave oven";
+
+//      -> Act: execute as ações necessárias
+        ResultActions result = mockMvc.perform(MockMvcRequestBuilders
+            .get("/v1/products/{id}", existingId)
+            .accept(MediaType.APPLICATION_JSON));
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        result.andExpect(MockMvcResultMatchers.status().isOk());
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(existingId));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.name").value(expectedName));
+        result.andExpect(MockMvcResultMatchers.jsonPath("$.description").value(expectedDescription));
+    }
+
+
     @Test  //  <findById> deve <RetornarStatusNotFound> [quando <IDNaoExistir>]
     public void findByIdShouldReturnStatusNotFoundWhenIdDoesNotExist() throws Exception {
 //      -> Padrão AAA
