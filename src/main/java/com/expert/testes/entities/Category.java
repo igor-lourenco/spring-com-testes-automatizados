@@ -9,7 +9,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -45,6 +44,7 @@ public class Category {
 
     @ManyToMany(mappedBy = "categories", fetch = FetchType.LAZY) // por padrão usa o Fetch.LAZY, uma categoria tem muitos produtos (não owner)
     @Fetch(FetchMode.SUBSELECT) // Evita N+1, Hibernate executa + 1 única query para carregar todas as entidades relacionadas em uma única operação
+    @Builder.Default // Para o @Builder respeitar o valor default e evitar o NullPointerException
     private Set<Product> products = new HashSet<>();
 }
 

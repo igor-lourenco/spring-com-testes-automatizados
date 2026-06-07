@@ -8,7 +8,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -66,6 +65,7 @@ public class Product {
             foreignKey = @ForeignKey(name = "fk_product_category_category") // nome da constraint de chave estrangeira
         )
     )
+    @Builder.Default // Para o @Builder respeitar o valor default e evitar o NullPointerException
     private Set<Category> categories = new HashSet<>();
 }
 
