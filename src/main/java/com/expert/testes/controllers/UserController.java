@@ -3,6 +3,7 @@ package com.expert.testes.controllers;
 import com.expert.testes.DTOs.UserDTO;
 import com.expert.testes.DTOs.UserWithPasswordDTO;
 import com.expert.testes.services.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -63,7 +64,7 @@ public class UserController {
 
 
     @PostMapping
-    public ResponseEntity<UserDTO> insert(@RequestBody UserWithPasswordDTO userWithPasswordDTO) {
+    public ResponseEntity<UserDTO> insert(@Valid @RequestBody UserWithPasswordDTO userWithPasswordDTO) {
         log.info("REQUEST - POST [insert]");
 
         UserDTO userDTO = service.insert(userWithPasswordDTO);
@@ -79,7 +80,7 @@ public class UserController {
 
     @PutMapping(value = "{id}")
     @ResponseStatus(HttpStatus.OK)
-    public UserDTO update(@PathVariable Long id, @RequestBody UserDTO dto) {
+    public UserDTO update(@PathVariable Long id, @Valid  @RequestBody UserDTO dto) {
         log.info("REQUEST - PUT [update]");
 
         UserDTO userDTO = service.update(id, dto);

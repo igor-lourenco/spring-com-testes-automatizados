@@ -2,6 +2,7 @@ package com.expert.testes.controllers;
 
 import com.expert.testes.DTOs.ProductDTO;
 import com.expert.testes.services.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -63,7 +64,7 @@ public class ProductController {
 
 
     @PostMapping
-    public ResponseEntity<ProductDTO> insert(@RequestBody ProductDTO dto) {
+    public ResponseEntity<ProductDTO> insert(@Valid @RequestBody ProductDTO dto) {
         log.info("REQUEST - POST [insert]");
 
         ProductDTO productDTO = service.insert(dto);
@@ -79,7 +80,7 @@ public class ProductController {
 
     @PutMapping(value = "{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ProductDTO update(@PathVariable Long id, @RequestBody ProductDTO dto) {
+    public ProductDTO update(@PathVariable Long id, @Valid @RequestBody ProductDTO dto) {
         log.info("REQUEST - PUT [update]");
 
         ProductDTO productDTO = service.update(id, dto);
