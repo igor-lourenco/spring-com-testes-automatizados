@@ -10,7 +10,7 @@ import jakarta.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
 
-@UserInsertValid
+@UserInsertValid // anotação customizada
 @JsonInclude(JsonInclude.Include.NON_NULL) // Ignora campos com valores nulos durante a serialização para JSON
 public record UserWithPasswordDTO (
     Long id,

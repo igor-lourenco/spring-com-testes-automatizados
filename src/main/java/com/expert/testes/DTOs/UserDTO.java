@@ -1,6 +1,7 @@
 package com.expert.testes.DTOs;
 
 import com.expert.testes.entities.User;
+import com.expert.testes.services.validation.UserUpdateValid;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
@@ -9,6 +10,7 @@ import jakarta.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
 
+@UserUpdateValid // anotação customizada
 @JsonInclude(JsonInclude.Include.NON_NULL) // Ignora campos com valores nulos durante a serialização para JSON
 public record UserDTO(
     Long id,

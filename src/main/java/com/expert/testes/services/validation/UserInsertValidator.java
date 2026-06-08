@@ -7,11 +7,13 @@ import com.expert.testes.entities.User;
 import com.expert.testes.repositories.UserRepository;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Log4j2
 public class UserInsertValidator implements ConstraintValidator<UserInsertValid, UserWithPasswordDTO> {
 
     @Autowired
@@ -23,7 +25,7 @@ public class UserInsertValidator implements ConstraintValidator<UserInsertValid,
 
     @Override
     public boolean isValid(UserWithPasswordDTO dto, ConstraintValidatorContext context) {
-
+        log.info("Validando na criação do user se o email: {} já existe", dto.email());
         List<FieldMessage> list = new ArrayList<>();
 
 //      TODO: coloque a baixo os testes de validação, acrescentando objetos FieldMessage na lista
