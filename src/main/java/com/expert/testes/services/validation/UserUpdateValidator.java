@@ -5,6 +5,7 @@ import com.expert.testes.DTOs.UserDTO;
 import com.expert.testes.controllers.handlers.FieldMessage;
 import com.expert.testes.entities.User;
 import com.expert.testes.repositories.UserRepository;
+import com.expert.testes.services.exceptions.EntidadeNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -39,7 +40,7 @@ public class UserUpdateValidator implements ConstraintValidator<UserUpdateValid,
 
         List<FieldMessage> list = new ArrayList<>();
 
-        User user = repository.findByEmail(dto.email());
+        User user = repository.findByEmail(dto.email()).orElseThrow(() -> new EntidadeNotFoundException("User não encontrado: " + dto.email()));
         if (user != null && userId != user.getId()) {
             list.add(new FieldMessage("email", "Email já existe"));
         }
