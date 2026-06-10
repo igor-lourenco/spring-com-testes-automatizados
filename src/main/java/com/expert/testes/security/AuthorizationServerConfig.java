@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
@@ -76,7 +77,8 @@ public class AuthorizationServerConfig {
     @Bean // Regista cliente OAuth2
     public RegisteredClientRepository registeredClientRepository(PasswordEncoder passwordEncoder, JdbcOperations jdbcOperations) {
 
-        RegisteredClient algafoodClientCredentialsTokenJWT = clienteClientCredentialsUsandoTokenJWT(passwordEncoder);
+        RegisteredClient clientCredentialsUsandoTokenJWTCom_CLIENT_SECRET_BASIC = fluxoClientCredentialsUsandoTokenJWTCom_CLIENT_SECRET_BASIC(passwordEncoder);
+        RegisteredClient clientCredentialsUsandoTokenJWTCom_CLIENT_SECRET_JWT = fluxoClientCredentialsUsandoTokenJWTCom_CLIENT_SECRET_JWT(passwordEncoder);
 
 
         // armazena em memória
@@ -87,13 +89,14 @@ public class AuthorizationServerConfig {
 
         JdbcRegisteredClientRepository registeredClientRepository = new JdbcRegisteredClientRepository(jdbcOperations);
 
-        registeredClientRepository.save(algafoodClientCredentialsTokenJWT);
+        registeredClientRepository.save(clientCredentialsUsandoTokenJWTCom_CLIENT_SECRET_BASIC);
+        registeredClientRepository.save(clientCredentialsUsandoTokenJWTCom_CLIENT_SECRET_JWT);
         return registeredClientRepository;
 
     }
 
 
-    private static RegisteredClient clienteClientCredentialsUsandoTokenJWT(PasswordEncoder passwordEncoder) {
+    private static RegisteredClient fluxoClientCredentialsUsandoTokenJWTCom_CLIENT_SECRET_BASIC(PasswordEncoder passwordEncoder) {
         return RegisteredClient
             .withId("1")
             .clientId("myclientid")
@@ -112,5 +115,41 @@ public class AuthorizationServerConfig {
                 .build())
 
             .build();
+    }
+
+
+
+//    habilita client_secret_jwt para esse client
+//    define client_credentials como grant type
+//    o JWT de autenticação no token endpoint deve ser assinado com um JwsAlgorithm (aqui, HS256 via HMAC).
+    private static RegisteredClient fluxoClientCredentialsUsandoTokenJWTCom_CLIENT_SECRET_JWT(PasswordEncoder passwordEncoder) {
+        return RegisteredClient
+            .withId("2")
+            .clientId("myclientidsecretjwt")
+
+            // o clientSecret funciona como chave simétrica bruta usada para assinar e validar o JWS
+            .clientSecret("0123456789abcdef0123456789abcdef")
+
+            // o cliente monta uma JWT assertion assinada com chave simétrica derivada do client_secret e envia essa assertion no request.
+            .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_JWT)
+
+            .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS) // fluxo client credentials
+            .scope("READ")
+            .scope("WRITE")
+
+            .tokenSettings(TokenSettings.builder()
+                .accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED) // Token JWT
+                .accessTokenTimeToLive(Duration.ofMinutes(30))
+                .build())
+
+//        ClientSettings.Builder tem o método tokenEndpointAuthenticationSigningAlgorithm(...)
+//        que serve para definir o algoritmo de assinatura do JWT usado no token endpoint para private_key_jwt e client_secret_jwt
+            .clientSettings(ClientSettings.builder()
+                .tokenEndpointAuthenticationSigningAlgorithm(MacAlgorithm.HS256)
+                .build())
+
+
+            .build();
+
     }
 }

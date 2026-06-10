@@ -49,6 +49,7 @@ public class JwtConfig {
     * - assinar o token JWT
     * - expor a chave pública para validação do token
     * - permitir que o servidor escolha qual chave usar
+    * - automaticamente expõe /oauth2/jwks
     */
     @Bean
     public JWKSource<SecurityContext> jwkSource() {
