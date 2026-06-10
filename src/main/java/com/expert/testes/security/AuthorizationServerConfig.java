@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.server.authorization.JdbcOAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
 import org.springframework.security.oauth2.server.authorization.client.JdbcRegisteredClientRepository;
@@ -74,11 +75,14 @@ public class AuthorizationServerConfig {
         return new JdbcOAuth2AuthorizationService(jdbcOperations, registeredClientRepository);
     }
 
-    @Bean // Regista cliente OAuth2
+    // define onde e como os clients (RegisteredClient) são armazenados e buscados
+    // ou seja, esse bean espera que exista as tabelas oauth2_registered_client, oauth2_authorization, opcional -> oauth2_authorization_consent
+    @Bean
     public RegisteredClientRepository registeredClientRepository(PasswordEncoder passwordEncoder, JdbcOperations jdbcOperations) {
 
         RegisteredClient clientCredentialsUsandoTokenJWTCom_CLIENT_SECRET_BASIC = fluxoClientCredentialsUsandoTokenJWTCom_CLIENT_SECRET_BASIC(passwordEncoder);
         RegisteredClient clientCredentialsUsandoTokenJWTCom_CLIENT_SECRET_JWT = fluxoClientCredentialsUsandoTokenJWTCom_CLIENT_SECRET_JWT(passwordEncoder);
+        RegisteredClient clientCredentialsUsandoTokenJWTCom_PRIVATE_KEY_JWT = fluxoClientCredentialsUsandoTokenJWTCom_PRIVATE_KEY_JWT(passwordEncoder);
 
 
         // armazena em memória
@@ -91,6 +95,7 @@ public class AuthorizationServerConfig {
 
         registeredClientRepository.save(clientCredentialsUsandoTokenJWTCom_CLIENT_SECRET_BASIC);
         registeredClientRepository.save(clientCredentialsUsandoTokenJWTCom_CLIENT_SECRET_JWT);
+        registeredClientRepository.save(clientCredentialsUsandoTokenJWTCom_PRIVATE_KEY_JWT);
         return registeredClientRepository;
 
     }
@@ -142,12 +147,45 @@ public class AuthorizationServerConfig {
                 .accessTokenTimeToLive(Duration.ofMinutes(30))
                 .build())
 
-//        ClientSettings.Builder tem o método tokenEndpointAuthenticationSigningAlgorithm(...)
-//        que serve para definir o algoritmo de assinatura do JWT usado no token endpoint para private_key_jwt e client_secret_jwt
+//          ClientSettings.Builder tem o método tokenEndpointAuthenticationSigningAlgorithm(...)
+//          que serve para definir o algoritmo de assinatura do JWT usado no token endpoint para PRIVATE_KEY_JWT e CLIENT_SECRET_JWT
             .clientSettings(ClientSettings.builder()
                 .tokenEndpointAuthenticationSigningAlgorithm(MacAlgorithm.HS256)
                 .build())
 
+            .build();
+
+    }
+
+
+
+//    habilita private_key_jwt para esse client
+//    define client_credentials como grant type
+//    o JWT de autenticação no token endpoint deve ser assinado com um JwsAlgorithm (aqui, HS256 via HMAC).
+    private static RegisteredClient fluxoClientCredentialsUsandoTokenJWTCom_PRIVATE_KEY_JWT(PasswordEncoder passwordEncoder) {
+        return RegisteredClient
+            .withId("3")
+            .clientId("myclientidprivatekey")
+            .clientSecret("{noop}myclientsecretprivatekey")
+
+//           cliente monta uma JWT assertion assinada com chave privada e envia essa assertion no request.
+            .clientAuthenticationMethod(ClientAuthenticationMethod.PRIVATE_KEY_JWT)
+
+            .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS) // fluxo client credentials
+            .scope("READ")
+            .scope("WRITE")
+
+            .tokenSettings(TokenSettings.builder()
+                .accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED) // Token JWT
+                .accessTokenTimeToLive(Duration.ofMinutes(30))
+                .build())
+
+//          ClientSettings.Builder tem o método tokenEndpointAuthenticationSigningAlgorithm(...)
+//          que serve para definir o algoritmo de assinatura do JWT usado no token endpoint para PRIVATE_KEY_JWT e CLIENT_SECRET_JWT
+            .clientSettings(ClientSettings.builder()
+                .tokenEndpointAuthenticationSigningAlgorithm(SignatureAlgorithm.RS256)
+                .jwkSetUrl("http://localhost:9200/oauth2/jwks") // API da chave pública para validar o token vindo da requisição oauth2/token
+                .build())
 
             .build();
 

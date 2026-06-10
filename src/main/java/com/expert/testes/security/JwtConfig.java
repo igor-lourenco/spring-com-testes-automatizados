@@ -3,6 +3,7 @@ package com.expert.testes.security;
 import com.expert.testes.entities.Role;
 import com.expert.testes.entities.User;
 import com.expert.testes.repositories.UserRepository;
+import com.expert.testes.security.clientSettings.PRIVATE_KEY_JWT.KeyPrinter;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
@@ -20,8 +21,8 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.HashSet;
@@ -45,6 +46,7 @@ public class JwtConfig {
         Quando o token é criado, adiciona claims customizadas
     */
 
+
     /* Esse método fornece a chave que será usada para assinar o TOKEN JWT, o Spring Authorization Server usa para:
     * - assinar o token JWT
     * - expor a chave pública para validação do token
@@ -52,35 +54,29 @@ public class JwtConfig {
     * - automaticamente expõe /oauth2/jwks
     */
     @Bean
-    public JWKSource<SecurityContext> jwkSource() {
-        log.info(">>> CARREGANDO AS CHAVES RSA QUE SERÃO USADAS PARA AUTENTICAÇÃO DO TOKEN JWT");
-        RSAKey rsaKey = generateRsa();
-        JWKSet jwkSet = new JWKSet(rsaKey);
-        return (jwkSelector, securityContext) -> jwkSelector.select(jwkSet);
-    }
+    public JWKSource<SecurityContext> jwkSource(KeyHolder keyHolder, KeyPrinter keyPrinter /*O KeyPrinter não é necessário, apenas para teste*/) {
+        log.info(">>> FORNECENDO AS CHAVES PARA O SPRIG AUTHORIZATION SERVER ASSINAR O TOKEN JWT");
+        JWKSet jwkSet = new JWKSet(keyHolder.getRsaKey());
+//        return (selector, context) -> selector.select(jwkSet);
 
+//      TODO: Carregando as chaves do arquivo salvo - apenas para teste, depois remover
+        log.warn(">>> CARREGANDO E PRINTANDO AS CHAVES GERADAS (APENAS PARA TESTE, DEPOIS REMOVER)");
+        keyPrinter.printKeys();
 
-    /* Esse método pega o KeyPair gerado e transforma em um objeto RSAKey, que é o formato esperado pela biblioteca de JWT/JWK */
-    private static RSAKey generateRsa() {
-        log.info(">>> CONVERTENDO PAR DE CHAVES RSA EM OBJETO RSAKEY UTILIZÁVEL PELO AUTHORIZATION SERVER");
-        KeyPair keyPair = generateRsaKey();
-        RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
-        RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-        return new RSAKey.Builder(publicKey).privateKey(privateKey).keyID(UUID.randomUUID().toString()).build();
-    }
+        log.warn(">>> PEGANDO A PRIVATE KEY DO ARQUIVO: {} (APENAS PARA TESTE, DEPOIS REMOVER)", keyPrinter.getPathPrivateKey().toAbsolutePath());
+        PrivateKey privateKey = keyHolder.loadPrivateKey(keyPrinter.getPathPrivateKey());
 
-    /* Esse método gera de fato o par de chaves RSA */
-    private static KeyPair generateRsaKey() {
-        log.info(">>> GERANDO O PAR DE CHAVES RSA QUE SERÁ USADO PARA ASSINAR OS TOKENS JWT");
-        KeyPair keyPair;
-        try {
-            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-            keyPairGenerator.initialize(2048);
-            keyPair = keyPairGenerator.generateKeyPair();
-        } catch (Exception ex) {
-            throw new IllegalStateException(ex);
-        }
-        return keyPair;
+        log.warn(">>> PEGANDO A PUBLIC KEY DO ARQUIVO: {} (APENAS PARA TESTE, DEPOIS REMOVER)", keyPrinter.getPathPublicKey().toAbsolutePath());
+        PublicKey publicKey = keyHolder.loadPublicKey(keyPrinter.getPathPublicKey());
+
+        RSAKey rsaKey = new RSAKey.Builder((RSAPublicKey) publicKey)
+            .privateKey((RSAPrivateKey) privateKey)
+            .keyID(UUID.randomUUID().toString())
+            .build();
+
+        JWKSet jwkSet2 = new JWKSet(rsaKey);
+
+        return (selector, context) -> selector.select(jwkSet2);
     }
 
 

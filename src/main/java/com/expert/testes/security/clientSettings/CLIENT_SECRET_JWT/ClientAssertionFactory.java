@@ -14,13 +14,13 @@ public class ClientAssertionFactory {
 
 
     public static void main(String[] args) {
-        String assertion = ClientAssertionFactory.createClientAssertion(
+        String jwt = ClientAssertionFactory.createClientAssertion(
             "myclientidsecretjwt",
             "0123456789abcdef0123456789abcdef",
             "http://localhost:9200/oauth2/token"
         );
 
-        System.out.println(assertion);
+        System.out.println("CLIENT ASSERTION:\n" + jwt);
     }
 
     public static String createClientAssertion(String clientId, String clientSecret, String tokenEndpoint) {
@@ -37,7 +37,6 @@ public class ClientAssertionFactory {
             .expiration(Date.from(exp))   // exp
             .id(UUID.randomUUID().toString())       // jti
             .signWith(key, SignatureAlgorithm.HS256)
-
             .compact();
     }
 }
