@@ -41,7 +41,6 @@ public class AuthorizationServerConfig {
 
             .oauth2AuthorizationServer( oAuth2AuthorizationServerConfigurer -> {
                    http.securityMatcher(oAuth2AuthorizationServerConfigurer.getEndpointsMatcher());
-
                 }
             )
 
