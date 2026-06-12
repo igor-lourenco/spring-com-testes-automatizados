@@ -3,6 +3,7 @@ package com.expert.testes.controllers;
 import com.expert.testes.DTOs.ProductDTO;
 import com.expert.testes.repositories.ProductRepository;
 import com.expert.testes.utils.ProductFactory;
+import com.expert.testes.utils.TokenUtil;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +29,7 @@ public class ProductControllerIntegrationTests {
     private long nonExistingCategoryId;
     private long existingCategoryId;
 
+    private String bearerToken, username, password;
 
     @Autowired
     private MockMvc mockMvc; // serve para simular requisições HTTP sem a necessidade de subir um servidor web real (como o Tomcat)
@@ -38,6 +40,9 @@ public class ProductControllerIntegrationTests {
     @Autowired
     private ProductRepository repository;
 
+    @Autowired
+    private TokenUtil tokenUtil;
+
     @BeforeEach // Preparação antes de cada teste da classe
     void setUp() throws Exception {
 //      Os valores agora têm que ser reais porque vai ser testado o banco de dados
@@ -46,8 +51,10 @@ public class ProductControllerIntegrationTests {
         nonExistingCategoryId = 999L;
         existingCategoryId = 1L;
 
+        username = "maria@gmail.com"; // perfil de admin
+        password = "maria123";
+        bearerToken = tokenUtil.obtainAccessToken(mockMvc, username, password);
     }
-
 
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
@@ -144,6 +151,7 @@ public class ProductControllerIntegrationTests {
         String jsonBody = objectMapper.writeValueAsString(productDTO);
         ResultActions result = mockMvc.perform(MockMvcRequestBuilders
             .post("/v1/products")
+            .header("Authorization", "Bearer " + bearerToken)
             .content(jsonBody)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON));
@@ -177,6 +185,7 @@ public class ProductControllerIntegrationTests {
         String jsonBody = objectMapper.writeValueAsString(productDTO);
         ResultActions result = mockMvc.perform(MockMvcRequestBuilders
             .post("/v1/products")
+            .header("Authorization", "Bearer " + bearerToken)
             .content(jsonBody)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON));
@@ -206,6 +215,7 @@ public class ProductControllerIntegrationTests {
         String jsonBody = objectMapper.writeValueAsString(productDTO);
         ResultActions result = mockMvc.perform(MockMvcRequestBuilders
             .put("/v1/products/{id}", existingId)
+            .header("Authorization", "Bearer " + bearerToken)
             .content(jsonBody)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON));
@@ -233,6 +243,7 @@ public class ProductControllerIntegrationTests {
         String jsonBody = objectMapper.writeValueAsString(productDTO);
         ResultActions result = mockMvc.perform(MockMvcRequestBuilders
             .put("/v1/products/{id}", nonExistingId)
+            .header("Authorization", "Bearer " + bearerToken)
             .content(jsonBody)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON));
@@ -262,6 +273,7 @@ public class ProductControllerIntegrationTests {
         String jsonBody = objectMapper.writeValueAsString(productDTO);
         ResultActions result = mockMvc.perform(MockMvcRequestBuilders
             .put("/v1/products/{id}", existingId)
+            .header("Authorization", "Bearer " + bearerToken)
             .content(jsonBody)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON));
@@ -287,6 +299,7 @@ public class ProductControllerIntegrationTests {
 //      -> Act: execute as ações necessárias
         ResultActions result = mockMvc.perform(MockMvcRequestBuilders
             .delete("/v1/products/{id}", existingId)
+            .header("Authorization", "Bearer " + bearerToken)
             .accept(MediaType.APPLICATION_JSON));
 
 
@@ -313,6 +326,7 @@ public class ProductControllerIntegrationTests {
 //      -> Act: execute as ações necessárias
         ResultActions result = mockMvc.perform(MockMvcRequestBuilders
             .delete("/v1/products/{id}", nonExistingId)
+            .header("Authorization", "Bearer " + bearerToken)
             .accept(MediaType.APPLICATION_JSON));
 
 
