@@ -5,7 +5,6 @@ import com.expert.testes.DTOs.UserWithPasswordDTO;
 import com.expert.testes.controllers.handlers.FieldMessage;
 import com.expert.testes.entities.User;
 import com.expert.testes.repositories.UserRepository;
-import com.expert.testes.services.exceptions.EntidadeNotFoundException;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.extern.log4j.Log4j2;
@@ -31,7 +30,7 @@ public class UserInsertValidator implements ConstraintValidator<UserInsertValid,
 
 //      TODO: coloque a baixo os testes de validação, acrescentando objetos FieldMessage na lista
 
-        User user = repository.findByEmail(dto.email()).orElseThrow(() -> new EntidadeNotFoundException("User não encontrado: " + dto.email()));
+        User user = repository.findByEmail(dto.email()).orElse(null);
 
         if (user != null) { // adiciona na lista se já tiver algum user com email passado no payload de request
             list.add(new FieldMessage("email", "Email já existe"));

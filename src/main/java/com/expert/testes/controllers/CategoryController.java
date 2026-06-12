@@ -1,7 +1,6 @@
 package com.expert.testes.controllers;
 
 import com.expert.testes.DTOs.CategoryDTO;
-import com.expert.testes.entities.Category;
 import com.expert.testes.services.CategoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -11,11 +10,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.Arrays;
 import java.util.List;
 
 @Log4j2
@@ -64,6 +63,7 @@ public class CategoryController {
     }
 
 
+    @PreAuthorize(value = "hasAnyRole('ROLE_ADMIN', 'ROLE_OPERATOR')")
     @PostMapping
     public ResponseEntity<CategoryDTO> insert(@RequestBody CategoryDTO dto) {
         log.info("REQUEST - POST [insert]");
@@ -79,6 +79,7 @@ public class CategoryController {
     }
 
 
+    @PreAuthorize(value = "hasAnyRole('ROLE_ADMIN', 'ROLE_OPERATOR')")
     @PutMapping(value = "{id}")
     @ResponseStatus(HttpStatus.OK)
     public CategoryDTO update(@PathVariable Long id, @RequestBody CategoryDTO dto) {
@@ -90,6 +91,7 @@ public class CategoryController {
         return categoryDTO;
     }
 
+    @PreAuthorize(value = "hasAnyRole('ROLE_ADMIN', 'ROLE_OPERATOR')")
     @DeleteMapping(value = "{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {

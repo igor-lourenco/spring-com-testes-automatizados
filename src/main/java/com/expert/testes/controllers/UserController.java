@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -26,6 +27,7 @@ public class UserController {
 
     private final UserService service;
 
+    @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<UserDTO> findAll() {
@@ -38,6 +40,7 @@ public class UserController {
     }
 
 
+    @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/page")
     @ResponseStatus(HttpStatus.OK)
     public Page<UserDTO> findAllPaged(
@@ -51,6 +54,7 @@ public class UserController {
     }
 
 
+    @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
     @GetMapping(value = "{id}")
     @ResponseStatus(HttpStatus.OK)
     public UserDTO findById(@PathVariable Long id) {
@@ -63,6 +67,7 @@ public class UserController {
     }
 
 
+    @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<UserDTO> insert(@Valid @RequestBody UserWithPasswordDTO userWithPasswordDTO) {
         log.info("REQUEST - POST [insert]");
@@ -78,6 +83,7 @@ public class UserController {
     }
 
 
+    @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
     @PutMapping(value = "{id}")
     @ResponseStatus(HttpStatus.OK)
     public UserDTO update(@PathVariable Long id, @Valid  @RequestBody UserDTO dto) {
@@ -89,6 +95,8 @@ public class UserController {
         return userDTO;
     }
 
+
+    @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
     @DeleteMapping(value = "{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {

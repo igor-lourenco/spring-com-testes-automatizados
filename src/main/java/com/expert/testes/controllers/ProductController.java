@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -63,6 +64,7 @@ public class ProductController {
     }
 
 
+    @PreAuthorize(value = "hasAnyRole('ROLE_ADMIN', 'ROLE_OPERATOR')")
     @PostMapping
     public ResponseEntity<ProductDTO> insert(@Valid @RequestBody ProductDTO dto) {
         log.info("REQUEST - POST [insert]");
@@ -78,6 +80,7 @@ public class ProductController {
     }
 
 
+    @PreAuthorize(value = "hasAnyRole('ROLE_ADMIN', 'ROLE_OPERATOR')")
     @PutMapping(value = "{id}")
     @ResponseStatus(HttpStatus.OK)
     public ProductDTO update(@PathVariable Long id, @Valid @RequestBody ProductDTO dto) {
@@ -89,6 +92,8 @@ public class ProductController {
         return productDTO;
     }
 
+
+    @PreAuthorize(value = "hasAnyRole('ROLE_ADMIN', 'ROLE_OPERATOR')")
     @DeleteMapping(value = "{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
