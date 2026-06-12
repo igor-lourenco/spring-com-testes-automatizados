@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
@@ -22,7 +23,10 @@ import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
-@WebMvcTest(ProductController.class) // Carrega o contexto, porém somente da camada web (teste de unidade: controlador)
+@WebMvcTest(                               // Carrega o contexto, porém somente da camada web (teste de unidade: controlador)
+    value = ProductController.class,       // Carrega especificamente essa classe de controlador para o teste
+    excludeAutoConfiguration = {SecurityAutoConfiguration.class} // Desativa a configuração automática de segurança do Spring Security pq teste de unidade não tem necessidade
+)
 public class ProductControllerTests {
 
     private long existingId;
