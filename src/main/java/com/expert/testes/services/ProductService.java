@@ -4,6 +4,7 @@ import com.expert.testes.DTOs.CategoryDTO;
 import com.expert.testes.DTOs.ProductDTO;
 import com.expert.testes.entities.Category;
 import com.expert.testes.entities.Product;
+import com.expert.testes.projections.ProductProjection;
 import com.expert.testes.repositories.CategoryRepository;
 import com.expert.testes.repositories.ProductRepository;
 import com.expert.testes.services.exceptions.DatabaseException;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Log4j2
@@ -28,6 +30,12 @@ public class ProductService {
 
     private final ProductRepository repository;
     private final CategoryRepository categoryRepository;
+
+
+    @Transactional(readOnly = true)
+    public Page<ProductProjection> findAllPagedProductProjection(Pageable pageable) {
+        return repository.searchProducts(Arrays.asList(1L, 3L), "A", pageable);
+    }
 
 
     @Transactional(readOnly = true)
@@ -127,4 +135,5 @@ public class ProductService {
             product.getCategories().add(category);
         }
     }
+
 }

@@ -1,6 +1,7 @@
 package com.expert.testes.controllers;
 
 import com.expert.testes.DTOs.ProductDTO;
+import com.expert.testes.projections.ProductProjection;
 import com.expert.testes.services.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,20 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService service;
+
+
+    @GetMapping(value = "/page/projections")
+    @ResponseStatus(HttpStatus.OK)
+    public Page<ProductProjection> findAllPagedProductProjection(
+        @PageableDefault(page = 0, size = 12, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
+        log.info("REQUEST - GET [findAllPagedProductProjection]");
+
+        Page<ProductProjection> productDTOs = service.findAllPagedProductProjection(pageable);
+
+        log.info("RESPONSE - GET [findAllPagedProductProjection]");
+        return productDTOs;
+    }
+
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
