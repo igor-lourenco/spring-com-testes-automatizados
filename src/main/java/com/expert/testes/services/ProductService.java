@@ -36,6 +36,7 @@ public class ProductService {
     private final CategoryRepository categoryRepository;
 
 
+    @SuppressWarnings("unchecked")
     @Transactional(readOnly = true)
     public Page<ProductDTO> findAllPagedProductProjection(String name, String categoryId, Pageable pageable) {
         try {
@@ -47,7 +48,8 @@ public class ProductService {
             List<Long> productIds = page.map(ProductProjection::getId).toList();
             List<Product> products = repository.searchProductsWithCategories(productIds);
 
-            products = Utils.replace(page.getContent(), products);
+//          products = Utils.replace(page.getContent(), products);
+            products = (List<Product>) Utils.replaceComGenerics(page.getContent(), products);
 
             List<ProductDTO> productDTOs = products.stream().map(p -> new ProductDTO(p, p.getCategories())).toList();
 

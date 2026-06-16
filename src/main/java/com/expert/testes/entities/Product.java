@@ -1,5 +1,6 @@
 package com.expert.testes.entities;
 
+import com.expert.testes.projections.IdProjection;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -17,7 +18,7 @@ import java.util.Set;
 @Entity
 @Table(name = "tb_product")
 @Builder
-public class Product {
+public class Product implements IdProjection<Long> {
 
     @EqualsAndHashCode.Include
     @Id
@@ -67,5 +68,11 @@ public class Product {
     )
     @Builder.Default // Para o @Builder respeitar o valor default e evitar o NullPointerException
     private Set<Category> categories = new HashSet<>();
+
+
+    @Override
+    public Long getId() {
+        return id;
+    }
 }
 
