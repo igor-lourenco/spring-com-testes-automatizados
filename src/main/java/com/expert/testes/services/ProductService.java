@@ -16,6 +16,7 @@ import lombok.extern.log4j.Log4j2;
 import org.hibernate.ObjectNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -35,12 +36,21 @@ public class ProductService {
 
 
     @Transactional(readOnly = true)
-    public Page<ProductProjection> findAllPagedProductProjection(String name, String categoryId, Pageable pageable) {
+    public Page<ProductDTO> findAllPagedProductProjection(String name, String categoryId, Pageable pageable) {
         try {
             List<Long> categoryIds = "0".equals(categoryId) ? new ArrayList<>()
                 : Arrays.asList(categoryId.split(",")).stream().map(Long::parseLong).toList();
 
-            return repository.searchProducts(categoryIds, name, pageable);
+            Page<ProductProjection> page = repository.searchProducts(categoryIds, name, pageable);
+
+            List<Long> productIds = page.map(ProductProjection::getId).toList();
+            List<Product> products = repository.searchProductsWithCategories(productIds);
+            List<ProductDTO> productDTOs = products.stream().map(p -> new ProductDTO(p, p.getCategories())).toList();
+
+            return new PageImpl<>(
+                productDTOs,
+                page.getPageable(),
+                page.getTotalElements());
 
         } catch (NumberFormatException e) {
             throw new NumeroFormatException("Parâmetro categoryId só pode conter números");

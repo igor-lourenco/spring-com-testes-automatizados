@@ -1,7 +1,6 @@
 package com.expert.testes.controllers;
 
 import com.expert.testes.DTOs.ProductDTO;
-import com.expert.testes.projections.ProductProjection;
 import com.expert.testes.services.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,14 +29,14 @@ public class ProductController {
 
     @GetMapping(value = "/page/projections")
     @ResponseStatus(HttpStatus.OK)
-    public Page<ProductProjection> findAllPagedProductProjection(
+    public Page<ProductDTO> findAllPagedProductProjection(
         @RequestParam(value = "name", defaultValue = "") String name,
         @RequestParam(value = "categoryId", defaultValue = "0") String categoryId,
         @PageableDefault(page = 0, size = 12, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
 
         log.info("REQUEST - GET [findAllPagedProductProjection]");
 
-        Page<ProductProjection> productDTOs = service.findAllPagedProductProjection(name, categoryId, pageable);
+        Page<ProductDTO> productDTOs = service.findAllPagedProductProjection(name, categoryId, pageable);
 
         log.info("RESPONSE - GET [findAllPagedProductProjection]");
         return productDTOs;
