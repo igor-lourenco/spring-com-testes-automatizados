@@ -9,6 +9,7 @@ import com.expert.testes.repositories.CategoryRepository;
 import com.expert.testes.repositories.ProductRepository;
 import com.expert.testes.services.exceptions.DatabaseException;
 import com.expert.testes.services.exceptions.EntidadeNotFoundException;
+import com.expert.testes.services.exceptions.NumeroFormatException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,8 +35,16 @@ public class ProductService {
 
 
     @Transactional(readOnly = true)
-    public Page<ProductProjection> findAllPagedProductProjection(Pageable pageable) {
-        return repository.searchProducts(Arrays.asList(1L, 3L), "A", pageable);
+    public Page<ProductProjection> findAllPagedProductProjection(String name, String categoryId, Pageable pageable) {
+        try {
+            List<Long> categoryIds = "0".equals(categoryId) ? new ArrayList<>()
+                : Arrays.asList(categoryId.split(",")).stream().map(Long::parseLong).toList();
+
+            return repository.searchProducts(categoryIds, name, pageable);
+
+        } catch (NumberFormatException e) {
+            throw new NumeroFormatException("Parâmetro categoryId só pode conter números");
+        }
     }
 
 

@@ -2,6 +2,7 @@ package com.expert.testes.controllers.handlers;
 
 import com.expert.testes.services.exceptions.DatabaseException;
 import com.expert.testes.services.exceptions.EntidadeNotFoundException;
+import com.expert.testes.services.exceptions.NumeroFormatException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,6 +60,20 @@ public class ControllerExceptionHandler {
         for (FieldError f : e.getBindingResult().getFieldErrors()) {
             error.addError(f.getField(), f.getDefaultMessage());
         }
+
+        return ResponseEntity.status(status).body(error);
+    }
+
+
+    @ExceptionHandler(NumeroFormatException.class)
+    public ResponseEntity<StandardError> handleNumeroFormatException(NumeroFormatException e, WebRequest request){
+        log.error("ERROR [handleNumeroFormatException] EXCEPTION :: {}, MENSAGEM :: {}", e.getClass().getSimpleName(), e.getMessage());
+
+        HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
+        String path = ((ServletWebRequest) request).getRequest().getRequestURI();
+
+        StandardError error = StandardError
+            .createStandardError(status, path, "Erro de formatação", e);
 
         return ResponseEntity.status(status).body(error);
     }

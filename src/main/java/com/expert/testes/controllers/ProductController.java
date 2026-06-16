@@ -31,10 +31,13 @@ public class ProductController {
     @GetMapping(value = "/page/projections")
     @ResponseStatus(HttpStatus.OK)
     public Page<ProductProjection> findAllPagedProductProjection(
+        @RequestParam(value = "name", defaultValue = "") String name,
+        @RequestParam(value = "categoryId", defaultValue = "0") String categoryId,
         @PageableDefault(page = 0, size = 12, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
+
         log.info("REQUEST - GET [findAllPagedProductProjection]");
 
-        Page<ProductProjection> productDTOs = service.findAllPagedProductProjection(pageable);
+        Page<ProductProjection> productDTOs = service.findAllPagedProductProjection(name, categoryId, pageable);
 
         log.info("RESPONSE - GET [findAllPagedProductProjection]");
         return productDTOs;
