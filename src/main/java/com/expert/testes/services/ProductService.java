@@ -10,6 +10,7 @@ import com.expert.testes.repositories.ProductRepository;
 import com.expert.testes.services.exceptions.DatabaseException;
 import com.expert.testes.services.exceptions.EntidadeNotFoundException;
 import com.expert.testes.services.exceptions.NumeroFormatException;
+import com.expert.testes.utils.Utils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -45,6 +46,9 @@ public class ProductService {
 
             List<Long> productIds = page.map(ProductProjection::getId).toList();
             List<Product> products = repository.searchProductsWithCategories(productIds);
+
+            products = Utils.replace(page.getContent(), products);
+
             List<ProductDTO> productDTOs = products.stream().map(p -> new ProductDTO(p, p.getCategories())).toList();
 
             return new PageImpl<>(
