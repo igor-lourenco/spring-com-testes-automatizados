@@ -3,12 +3,9 @@ package com.expert.testes.DTOs;
 import com.expert.testes.entities.User;
 import com.expert.testes.services.validation.UserInsertValid;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.validation.constraints.Size;
 
 @UserInsertValid // anotação customizada
 @JsonInclude(JsonInclude.Include.NON_NULL) // Ignora campos com valores nulos durante a serialização para JSON
@@ -17,16 +14,15 @@ public record UserWithPasswordDTO (
 
     @NotBlank(message = "Campo 'firstName' obrigatório")
     String firstName,
+    @NotBlank(message = "Campo 'lastName' obrigatório")
     String lastName,
 
     @Email(message = "Campo 'email' inválido")
     String email,
 
     @NotBlank(message = "Campo 'password' obrigatório")
-    String password,
-
-    @JsonProperty("roles")
-    List<RoleDTO> rolesDTO) {
+    @Size(min = 8, message = "Campo 'password' deve ter no mínimo 8 caracteres")
+    String password) {
 
     public UserWithPasswordDTO(User user) {
         this(
@@ -34,10 +30,7 @@ public record UserWithPasswordDTO (
             user.getFirstName(),
             user.getLastName(),
             user.getEmail(),
-            user.getPassword(),
-            user.getRoles() == null
-                ? new ArrayList<>()
-                : user.getRoles().stream().map(RoleDTO::new).toList()
+            user.getPassword()
         );
     }
 }

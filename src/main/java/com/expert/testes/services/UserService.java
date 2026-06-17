@@ -66,6 +66,10 @@ public class UserService {
 
             User user = new User();
             convertUserWithPasswordDTOToUser(userWithPasswordDTO, user);
+
+            user.getRoles().clear();
+            user.getRoles().add(roleRepository.findByAuthority("ROLE_OPERATOR").get());
+
             user = repository.save(user);
             return new UserDTO(user);
 
@@ -138,13 +142,13 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(userWithPasswordDTO.password()));
 
         user.getRoles().clear();
-
-        if(userWithPasswordDTO.rolesDTO() == null) return;
-
-        for (RoleDTO roleDTO : userWithPasswordDTO.rolesDTO()) {
-            //getReferenceById ⇾ ideal para salvar ou atualizar relacionamentos sem precisar carregar dados desnecessários do banco.
-            Role role = roleRepository.getReferenceById(roleDTO.id());
-            user.getRoles().add(role);
-        }
+//
+//        if(userWithPasswordDTO.rolesDTO() == null) return;
+//
+//        for (RoleDTO roleDTO : userWithPasswordDTO.rolesDTO()) {
+//            //getReferenceById ⇾ ideal para salvar ou atualizar relacionamentos sem precisar carregar dados desnecessários do banco.
+//            Role role = roleRepository.getReferenceById(roleDTO.id());
+//            user.getRoles().add(role);
+//        }
     }
 }

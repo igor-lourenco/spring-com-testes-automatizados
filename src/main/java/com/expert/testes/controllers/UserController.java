@@ -67,7 +67,6 @@ public class UserController {
     }
 
 
-    @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<UserDTO> insert(@Valid @RequestBody UserWithPasswordDTO userWithPasswordDTO) {
         log.info("REQUEST - POST [insert]");
