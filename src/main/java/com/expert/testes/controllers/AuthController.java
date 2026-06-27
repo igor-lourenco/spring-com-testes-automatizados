@@ -16,12 +16,12 @@ public class AuthController {
 
     private final AuthService service;
 
-    @PostMapping(path = "/recover-password")
+    @PostMapping(path = "/recover-token")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void recoverPassword(@Valid @RequestBody EmailDTO dto) {
-        log.info("REQUEST - GET [recoverPassword]");
+    public void recoverToken(@Valid @RequestBody EmailDTO dto) {
+        log.info("REQUEST - POST [recoverToken]");
 
-        log.info("RESPONSE - GET [recoverPassword]: {}", service.recoverPassword(dto));
+        log.info("RESPONSE - POST [recoverToken] token enviado:  {}", service.recoverToken(dto));
     }
 
 }
