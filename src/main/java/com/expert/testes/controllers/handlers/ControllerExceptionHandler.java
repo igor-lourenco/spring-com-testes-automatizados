@@ -1,6 +1,7 @@
 package com.expert.testes.controllers.handlers;
 
 import com.expert.testes.services.exceptions.DatabaseException;
+import com.expert.testes.services.exceptions.EmailException;
 import com.expert.testes.services.exceptions.EntidadeNotFoundException;
 import com.expert.testes.services.exceptions.NumeroFormatException;
 import lombok.extern.log4j.Log4j2;
@@ -74,6 +75,20 @@ public class ControllerExceptionHandler {
 
         StandardError error = StandardError
             .createStandardError(status, path, "Erro de formatação", e);
+
+        return ResponseEntity.status(status).body(error);
+    }
+
+
+    @ExceptionHandler(EmailException.class)
+    public ResponseEntity<StandardError> handleEmailException(EmailException e, WebRequest request){
+        log.error("ERROR [handleEmailException] EXCEPTION :: {}, MENSAGEM :: {}", e.getClass().getSimpleName(), e.getMessage());
+
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        String path = ((ServletWebRequest) request).getRequest().getRequestURI();
+
+        StandardError error = StandardError
+            .createStandardError(status, path, "Erro de email", e);
 
         return ResponseEntity.status(status).body(error);
     }
