@@ -1,6 +1,7 @@
 package com.expert.testes.controllers;
 
 import com.expert.testes.DTOs.EmailDTO;
+import com.expert.testes.DTOs.NewPasswordDTO;
 import com.expert.testes.services.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,20 @@ public class AuthController {
     public void recoverToken(@Valid @RequestBody EmailDTO dto) {
         log.info("REQUEST - POST [recoverToken]");
 
-        log.info("RESPONSE - POST [recoverToken] token enviado:  {}", service.recoverToken(dto));
+        service.recoverToken(dto);
+
+        log.info("RESPONSE - POST [recoverToken]");
+    }
+
+
+    @PutMapping(path = "/new-password")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void saveNewPassword(@Valid @RequestBody NewPasswordDTO dto) {
+        log.info("REQUEST - PUT [saveNewPassword]");
+
+        service.saveNewPassword(dto);
+
+        log.info("RESPONSE - PUT [saveNewPassword]");
     }
 
 }
