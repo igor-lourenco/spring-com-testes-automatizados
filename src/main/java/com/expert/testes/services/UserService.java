@@ -7,6 +7,7 @@ import com.expert.testes.entities.Role;
 import com.expert.testes.entities.User;
 import com.expert.testes.repositories.RoleRepository;
 import com.expert.testes.repositories.UserRepository;
+import com.expert.testes.security.services.AuthSecurity;
 import com.expert.testes.services.exceptions.DatabaseException;
 import com.expert.testes.services.exceptions.EntidadeNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
@@ -31,6 +32,7 @@ public class UserService {
     private final UserRepository repository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthSecurity authSecurity;
 
 
     @Transactional(readOnly = true)
@@ -56,6 +58,10 @@ public class UserService {
     @Transactional(readOnly = true)
     public UserDTO findById(Long id) {
         User user = findUserById(id);
+
+        User userAuthenticated = authSecurity.getUserId();
+        log.info("User autenticado: {}", userAuthenticated.getEmail());
+
         return new UserDTO(user);
     }
 
