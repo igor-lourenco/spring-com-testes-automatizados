@@ -61,13 +61,13 @@
 ##
 ### Annotations usadas nas classes de teste
 
-| Annotation | Descrição |
-| :--- | :--- |
-| `@SpringBootTest` | Carrega o contexto da aplicação (teste de integração) |
+| Anotação                                  | Descrição |
+|:------------------------------------------| :--- |
+| `@SpringBootTest`                         | Carrega o contexto da aplicação (teste de integração) |
 | `@SpringBootTest` `@AutoConfigureMockMvc` | Carrega o contexto da aplicação (teste de integração & web) Trata as requisições sem subir o servidor |
-| `@WebMvcTest(Classe.class)` | Carrega o contexto, porém somente da camada web (teste de unidade: controlador) |
-| `@ExtendWith(SpringExtension.class)` | Não carrega o contexto, mas permite usar os recursos do Spring com JUnit (teste de unidade: service/component) |
-| `@DataJpaTest` | Carrega somente os componentes relacionados ao Spring Data JPA. Cada teste é transacional e dá rollback ao final. (teste de unidade: repository) |
+| `@WebMvcTest(Classe.class)`               | Carrega o contexto, porém somente da camada web (teste de unidade: controlador) |
+| `@ExtendWith(SpringExtension.class)`      | Não carrega o contexto, mas permite usar os recursos do Spring com JUnit (teste de unidade: service/component) |
+| `@DataJpaTest`                            | Carrega somente os componentes relacionados ao Spring Data JPA. Cada teste é transacional e dá rollback ao final. (teste de unidade: repository) |
 
 ##
 ### Fixture
@@ -83,3 +83,40 @@ Uma forma de organizar melhor o código dos testes e evitar repetições
 | `@AfterEach` | `@After` | Preparação depois de cada teste da classe |
 
 
+---
+# Avançando nos testes unitários
+
+## Abordagens de teste
+
+O teste de software busca descobrir sistematicamente diferentes classes de erros com tempo e esforço mínimos.<br>
+Os testes são divididos principalmente em dois grupos: caixa branca e caixa preta.
+
+### Caixa branca
+* **Acesso interno:** O testador tem acesso total à estrutura interna e ao código-fonte da aplicação.
+* **Foco principal:** Garantir que os componentes internos do software estejam concisos e funcionando corretamente.
+* **Análise de caminhos:** Avalia os fluxos e caminhos básicos de execução do código para que sejam devidamente testados.
+* **Exemplo clássico:** Os testes unitários são o principal exemplo desta categoria.
+
+### Caixa preta
+* **Foco nos requisitos:** Baseia-se nas ações que o software deve desempenhar, focando exclusivamente nos requisitos da aplicação.
+* **Código ignorado:** O código-fonte não é considerado; o testador avalia como o sistema funciona externamente, não seus elementos constitutivos.
+* **Exemplos clássicos:** Os testes de integração e de API são os principais exemplos desta técnica.
+
+![Imagem1.png](images%2FImagem1.png)
+
+Uma das principais vantagens dos testes unitários por exemplo é proteger os recursos já implementados contra quebras durante alterações no código. Proporciona ao desenvolvedor segurança e proteção da aplicação contra bugs.
+
+---
+
+## Principais anotações Mockito
+
+| Anotação       | Descrição |
+|:---------------| :--- |
+| `@Mock`        | Cria um objeto falso que simula o comportamento de um componente real. Substitui dependências externas do sistema, sendo muito utilizado para injetar classes como `Repository` ou `Service`. |
+| `@Spy`         | Encapsula e "espiona" a instância de um objeto real. Delega as chamadas de métodos para o objeto verdadeiro, rastreando suas execuções e parâmetros. Usado para simular métodos da própria classe sob teste ou em sistemas legados. |
+| `@InjectMocks` | Instancia automaticamente o objeto que está sendo testado. Injeta de forma automática todas as dependências que foram criadas usando as anotações `@Mock` e `@Spy`. |
+
+### Diferença entre @Mock e @Spy
+
+* **@Mock (Objeto Falso):** Cria uma instância totalmente vazia (mockada). Se você chamar um método dele sem programar o comportamento antes, ele não executará o código real e retornará o valor padrão (como `null` ou `0`).
+* **@Spy (Objeto Real):** Cria uma cópia de uma instância real existente. Se você chamar um método dele sem programar nenhum comportamento, ele executará o código verdadeiro do método e retornará o resultado real.
