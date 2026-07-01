@@ -120,3 +120,20 @@ Uma das principais vantagens dos testes unitários por exemplo é proteger os re
 
 * **@Mock (Objeto Falso):** Cria uma instância totalmente vazia (mockada). Se você chamar um método dele sem programar o comportamento antes, ele não executará o código real e retornará o valor padrão (como `null` ou `0`).
 * **@Spy (Objeto Real):** Cria uma cópia de uma instância real existente. Se você chamar um método dele sem programar nenhum comportamento, ele executará o código verdadeiro do método e retornará o resultado real.
+
+---
+## Cobertura de código com Jacoco
+
+### Introdução à cobertura de código
+
+* No processo de desenvolvimento de software um dos principais objetivos é criar aplicações de alta qualidade e livres de falhas, atendendo aos requisitos funcionais e não funcionais.
+* Uma das partes principais deste processo é o teste de software, que tem como objetivo descobrir sistematicamente diferentes classes de erros com uma quantidade de tempo e esforço mínimos. 
+* Uma das principais vantagens ao implementar os testes unitários, por exemplo, é proteger os recursos já implementados de serem quebrados à medida que o código muda. Além de proporcionar ao desenvolvedor um senso de proteção da aplicação contra bugs.
+* No entanto, alguns autores defendem que somente implementar os testes unitários não é o suficiente. Neste caso, muitos recomendam abordagens de cobertura de código.
+* Cobertura de código é uma métrica que indica a porcentagem de código que está coberta por ao menos um teste automatizado.
+  * **Exemplo**: Uma cobertura de 90% indica que 10% do código não está coberto por nenhum teste automatizado.
+* A cobertura de testes é muito recomendada em alguns contextos desde o princípio do desenvolvimento do software por eliminar possíveis bugs ou permitir que sejam descobertos no estágio inicial do desenvolvimento.
+* Podemos dizer que a cobertura de código é uma parte que compõe a cobertura de testes (*test coverage*), que é definido como métrica de teste de software que mede a quantidade de testes executados, dado um conjunto de casos de testes.
+* Enquanto a cobertura de código é uma medida quantitativa (número de linhas de código que foram executadas pelos testes), a cobertura de teste é uma medida qualitativa, permitindo validar a implementação dos requisitos do produto. 
+* Para realizar a cobertura de código de maneira adequada é necessário ter acesso aos componentes internos (classes e funções) da aplicação.
+
