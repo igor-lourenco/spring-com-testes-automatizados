@@ -137,3 +137,88 @@ Uma das principais vantagens dos testes unitários por exemplo é proteger os re
 * Enquanto a cobertura de código é uma medida quantitativa (número de linhas de código que foram executadas pelos testes), a cobertura de teste é uma medida qualitativa, permitindo validar a implementação dos requisitos do produto. 
 * Para realizar a cobertura de código de maneira adequada é necessário ter acesso aos componentes internos (classes e funções) da aplicação.
 
+### Tipos Básicos de Cobertura de Código
+
+#### Statement Coverage (Line coverage)
+
+* Usado para verificar quantas instruções ou comandos do código são executadas;
+* Também é chamado de *line coverage* por alguns autores;
+* O cálculo do percentual de *statement coverage* pode ser calculado da seguinte forma:
+  * **Statement coverage** = Número de statements executados / Número total de statements * 100
+
+##### Exemplo:
+![imagem2.png](images%2Fimagem2.png)<br>
+*Fonte: [Baeldung CS - Code Coverage](https://www.baeldung.com/cs/code-coverage)*
+
+* Considerando 3 cenários, temos:
+  * **Para a = 3, b = 5:** serão executadas as linhas 1, 2, 3 e 8. Desta forma temos 4 linhas de 8, o que significa que temos 4/8 ou 50% de cobertura.
+  * **Para a = 3, b = -5:** serão executadas as linhas 1, 2, 4, 5 e 8, ou seja, 5/8 o que equivale a 63% de cobertura.
+  * **Para a = 10, b = -10:** serão executadas as linhas 1, 2, 4, 6, 7 e 8, ou seja, 75%.
+  * Neste caso, para termos uma cobertura de 100% no método soma, todos os 3 cenários devem ser considerados.
+* A vantagem desta abordagem está em permitir verificar diferentes caminhos e quais deles não estão cobertos.
+
+---
+
+#### Branch Coverage
+
+* Verifica se cada ramificação de cada estrutura de controle (incluindo `if/else`, `switch case`, `for`, `while`) é executada;
+* O cálculo do percentual de *branch coverage* pode ser calculado da seguinte forma:
+  * **Branch coverage** = Número de branchs executadas / Número total de branchs * 100
+
+##### Exemplo:
+![imagem3.png](images%2Fimagem3.png)<br>
+*Fonte: [Baeldung CS - Code Coverage](https://www.baeldung.com/cs/code-coverage)*
+
+![imagem4.png](images%2Fimagem4.png)
+
+* Considerando os 2 cenários:
+  * **Para a = 1:** será executada as linhas 1 e 3, ou seja, 2/3 equivalente a 75%;
+  * **Para a = 4:** serão executadas as linhas 1-3, ou seja, 100%.
+  * Neste caso, ambos os cenários oferecem uma cobertura de 100%.
+* Algumas vantagens desta abordagem:
+  * Permite identificar comportamentos não previstos;
+  * Permite mapear áreas do código-fonte que outras abordagens não mapeiam.
+
+
+
+#### Function Coverage
+
+* A cobertura de função verifica se cada função de um programa está sendo chamada pelo menos uma vez.
+* **Exemplo:** No caso de uma aplicação composta por uma única função ou método, a implementação de um único teste de unidade para este método resultará em uma cobertura de 100%.
+
+
+##### Discussão
+
+* **Qual o percentual de cobertura a ser perseguido?**
+* Apesar de a ideia parecer ótima, alcançar os 100% de cobertura de código não deveria ser uma meta absoluta, pois existem trechos que não precisam diretamente de serem testados.
+  * *Exemplo:* Códigos que podemos gerar automaticamente com a própria IDE, como Getters e Setters.
+* É uma decisão difícil escolher qual trecho de código não precisa ser testado. O fato é que se você precisar priorizar, teste aqueles métodos que são complicados e/ou importantes. Use o número de cobertura para ajudá-lo a identificar trechos que não estão testados.
+* Alcançar os 100% de cobertura é desejável, mas não é uma garantia que o seu sistema seja à prova de defeitos.
+
+---
+
+#### Ferramentas para Cobertura
+
+* Algumas das principais ferramentas de cobertura de testes são:
+  * **JaCoCo** no contexto do Java;
+  * **Istanbul** no contexto do Javascript;
+  * **Coverage.py** no contexto do Python;
+  * **NCover** no contexto do .NET.
+* Vamos focar na utilização do JaCoCo.
+
+### JaCoCo
+
+* JaCoCo é uma ferramenta de código aberto (*open-source*) usada para mensurar a cobertura de código em aplicações;
+* A partir de relatórios visuais é possível identificar as partes do código que estão cobertas e que ainda faltam cobertura;
+* O JaCoCo implementa 3 métricas principais para cobertura, sendo:
+  * Line Coverage / Statement;
+  * Branch Coverage;
+  * **Cyclomatic complexity:** A partir de uma combinação linear apresenta o número de caminhos que necessitam cobertura.
+* O JaCoCo auxilia o usuário na visualização e análise da cobertura usando diamantes coloridos, conforme a imagem abaixo:
+
+![Imagem5.png](images%2FImagem5.png)<br>
+*Fonte: [Baeldung - Intro to JaCoCo](https://www.baeldung.com/jacoco)*
+
+* **Diamante vermelho:** Indica que nenhum teste está cobrindo o branch;
+* **Diamante amarelo:** Indica que o código está parcialmente coberto;
+* **Diamante verde:** Indica que todo o branch foi testado e coberto;
