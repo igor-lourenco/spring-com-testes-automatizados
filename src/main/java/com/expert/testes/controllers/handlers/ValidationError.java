@@ -9,9 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@SuperBuilder
+@SuperBuilder //  permite que o builder da classe filha tenha acesso a todos os atributos da cadeia de herança
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper=false) //  compara e gera o código hash considerando apenas as variáveis que foram declaradas na classe atual (subclasse).
 public class ValidationError extends StandardError {
 
     @Setter(AccessLevel.NONE)
