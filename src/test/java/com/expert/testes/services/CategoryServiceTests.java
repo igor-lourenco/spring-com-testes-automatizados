@@ -12,6 +12,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +32,8 @@ public class CategoryServiceTests {
 
     private Category category;
     private List<Category> categoryList;
+    private PageImpl<Category> page;
+    private Pageable pageable;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -35,6 +41,9 @@ public class CategoryServiceTests {
 
         category = CategoryFactory.createCategory(1L);
         categoryList = Arrays.asList(category);
+
+        page = new PageImpl<>(List.of(category));
+        pageable = PageRequest.of(0, 10);
     }
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
@@ -62,4 +71,29 @@ public class CategoryServiceTests {
             Mockito.times(1)
         ).findAll();
     }
+
+
+    @Test  //  <findAllPaged> deve <RetornarPage> [quando <>]
+    public void findAllPagedShouldReturnPage(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(repository.findAll(Mockito.any(Pageable.class))).thenReturn(page); // repository.findAll → deve retornar um Page quando receber qualquer objeto do tipo Pageable
+
+
+//      -> Act: execute as ações necessárias
+        Page<CategoryDTO> result = service.findAllPaged(pageable);
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertNotNull(result);
+        Assertions.assertFalse(result.isEmpty());
+        Assertions.assertEquals(1, result.getTotalElements());
+
+        Mockito.verify( // garante que o método 'repository.findAll' que está dentro do 'service.findAllPaged' tenha sido chamado exatamente 1 vez
+            repository,
+            Mockito.times(1)
+        ).findAll(pageable);
+    }
+
 }
