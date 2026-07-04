@@ -19,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 //@ExtendWith(SpringExtension.class) // Não carrega o contexto, mas permite usar os recursos do Spring com JUnit (teste de unidade: service/component)
 @ExtendWith(MockitoExtension.class) // Não carrega o contexto, mas permite usar os recursos do Spring com JUnit (teste de unidade: service/component)
@@ -30,20 +31,27 @@ public class CategoryServiceTests {
     @Mock // Cria uma simulação, evita conexões reais com o banco de dados e permite programar retornos fictícios para os métodos do repositório.
     private CategoryRepository repository;
 
+    private long existingId;
+    private long nonExistingId;
+
     private Category category;
     private List<Category> categoryList;
     private PageImpl<Category> page;
     private Pageable pageable;
 
+
     @BeforeEach
     void setUp() throws Exception {
 //      Os valores não têm nenhum vínculo com o banco de dados, são apenas valores de controle para simulação
+        existingId = 1L;
+        nonExistingId = 999L;
 
-        category = CategoryFactory.createCategory(1L);
+        category = CategoryFactory.createCategory(existingId);
         categoryList = Arrays.asList(category);
 
         page = new PageImpl<>(List.of(category));
         pageable = PageRequest.of(0, 10);
+
     }
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
@@ -96,4 +104,29 @@ public class CategoryServiceTests {
         ).findAll(pageable);
     }
 
+
+    @Test  //  <findById> deve <RetornarCategoryDTO> [quando <IdExistir>]
+    public void findByIdShouldReturnCategoryDTOWhenIdExists(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(repository.findById(existingId))
+            .thenReturn(Optional.of(category)); // repository.findById → deve retornar Optional de Category quando id existir
+
+
+//      -> Act: execute as ações necessárias
+        CategoryDTO categoryDTO = service.findById(existingId);
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertNotNull(categoryDTO);
+        Assertions.assertEquals(1, categoryDTO.id());
+        Assertions.assertEquals("Category Mock", categoryDTO.name());
+
+
+        Mockito.verify( // garante que o método 'repository.findById' que está dentro do 'service.findById' tenha sido chamado exatamente 1 vez
+            repository,
+            Mockito.times(1)
+        ).findById(existingId);
+    }
 }
