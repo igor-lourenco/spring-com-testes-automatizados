@@ -3,6 +3,7 @@ package com.expert.testes.services;
 import com.expert.testes.DTOs.CategoryDTO;
 import com.expert.testes.entities.Category;
 import com.expert.testes.repositories.CategoryRepository;
+import com.expert.testes.services.exceptions.EntidadeNotFoundException;
 import com.expert.testes.utils.CategoryFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -128,5 +129,31 @@ public class CategoryServiceTests {
             repository,
             Mockito.times(1)
         ).findById(existingId);
+    }
+
+
+    @Test  //  <findById> deve <LancarEntidadeNotFoundException> [quando <IdNaoExistir>]
+    public void findByIdShouldThrowEntidadeNotFoundExceptionWhenIdDoesNotExists(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(repository.findById(nonExistingId))
+            .thenReturn(Optional.empty()); // repository.findById → deve retornar Optional vazio quando id não existir
+
+
+//      -> Act: execute as ações necessárias
+        EntidadeNotFoundException ex = Assertions.assertThrows(EntidadeNotFoundException.class, () -> {
+            service.findById(nonExistingId);
+        });
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertEquals("Category não encontrado: " + nonExistingId, ex.getMessage());
+
+
+        Mockito.verify( // garante que o método 'repository.findById' que está dentro do 'service.findById' tenha sido chamado exatamente 1 vez
+            repository,
+            Mockito.times(1)
+        ).findById(nonExistingId);
     }
 }
