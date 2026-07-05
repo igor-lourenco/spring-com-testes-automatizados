@@ -34,6 +34,8 @@ public class CategoryServiceTests {
 
     private long existingId;
     private long nonExistingId;
+    private long dependentId;
+
 
     private Category category;
     private List<Category> categoryList;
@@ -46,6 +48,7 @@ public class CategoryServiceTests {
 //      Os valores não têm nenhum vínculo com o banco de dados, são apenas valores de controle para simulação
         existingId = 1L;
         nonExistingId = 999L;
+        dependentId = 2L;
 
         category = CategoryFactory.createCategory(existingId);
         categoryList = Arrays.asList(category);
@@ -155,5 +158,30 @@ public class CategoryServiceTests {
             repository,
             Mockito.times(1)
         ).findById(nonExistingId);
+    }
+
+
+    @Test  //  <insert> deve <PersistirObjeto> [quando <IdEhNull>]
+    public void insertShouldPersistObjectWhenIdIsNull(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(repository.save(Mockito.any(Category.class)))
+            .thenReturn(category); // repository.save → deve retornar um Category quando receber qualquer objeto do tipo Category
+
+
+//      -> Act: execute as ações necessárias
+        CategoryDTO categoryDTO = service.insert(new CategoryDTO(null, "Category Mock"));
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertNotNull(categoryDTO);
+        Assertions.assertEquals(existingId, categoryDTO.id());
+
+
+        Mockito.verify( // garante que o método 'repository.save' que está dentro do 'service.insert' foi usado exatamente 1 vez
+                repository,
+                Mockito.times(1))
+            .save(Mockito.any(Category.class));
     }
 }
