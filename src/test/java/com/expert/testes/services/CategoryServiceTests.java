@@ -184,4 +184,29 @@ public class CategoryServiceTests {
                 Mockito.times(1))
             .save(Mockito.any(Category.class));
     }
+
+
+    @Test  //  <update> deve <AtualizarEntidade> [quando <IdExistir>]
+    public void updateShouldUpdateEntidadeWhenIdExists(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(repository.findById(existingId))
+            .thenReturn(Optional.of(category)); // repository.findById → deve retornar Optional de Category quando id existir
+
+
+//      -> Act: execute as ações necessárias
+        CategoryDTO categoryDTO = service.update(existingId, new CategoryDTO(null, "Category Mock"));
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertNotNull(categoryDTO);
+
+
+        Mockito.verify( // garante que o método do 'repository.findById' que está dentro do 'service.update' foi usado exatamente 1 vez
+            repository,
+            Mockito.times(1)
+        ).findById(existingId);
+    }
+
 }
