@@ -209,4 +209,30 @@ public class CategoryServiceTests {
         ).findById(existingId);
     }
 
+
+    @Test  //  <update> deve <LancarEntidadeNotFoundException> [quando <IdNaoExistir>]
+    public void updateShouldThrowEntidadeNotFoundExceptionWhenIdDoesNotExists(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(repository.findById(nonExistingId))
+            .thenReturn(Optional.empty()); // repository.findById → deve retornar Optional vazio quando id não existir
+
+
+//      -> Act: execute as ações necessárias
+        Assertions.assertThrows(EntidadeNotFoundException.class, () -> {
+            service.update(nonExistingId, new CategoryDTO(null, "Category Mock"));
+        });
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Mockito.verify( // garante que o método do 'repository.findById' que está dentro do 'service.update' foi usado exatamente 1 vez
+            repository,
+            Mockito.times(1)
+        ).findById(nonExistingId);
+
+        Mockito // garante que o 'repository' que está dentro do 'service.update' não foi usado além do esperado após a execução completa
+            .verifyNoMoreInteractions(repository);
+    }
+
 }
