@@ -3,6 +3,7 @@ package com.expert.testes.services;
 import com.expert.testes.DTOs.CategoryDTO;
 import com.expert.testes.entities.Category;
 import com.expert.testes.repositories.CategoryRepository;
+import com.expert.testes.services.exceptions.DatabaseException;
 import com.expert.testes.services.exceptions.EntidadeNotFoundException;
 import com.expert.testes.utils.CategoryFactory;
 import org.junit.jupiter.api.Assertions;
@@ -13,6 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -233,6 +235,36 @@ public class CategoryServiceTests {
 
         Mockito // garante que o 'repository' que está dentro do 'service.update' não foi usado além do esperado após a execução completa
             .verifyNoMoreInteractions(repository);
+    }
+
+
+    @Test  //  <delete> deve <LancarDatabaseException> [quando <IdEhDependente>]
+    public void deleteShouldThrowDatabaseExceptionWhenDependentId(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(repository.existsById(dependentId))
+            .thenReturn(true); // repository.existsById → retorna true quando o id dependente existir
+
+        Mockito.doThrow(DataIntegrityViolationException.class)
+            .when(repository).deleteById(dependentId); // repository.deleteById → lançe DataIntegrityViolationException quando deletar id dependente
+
+//      -> Act: execute as ações necessárias
+        Assertions.assertThrows(DatabaseException.class, () -> {
+            service.delete(dependentId);
+        });
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Mockito.verify( // garante que o método do 'repository.existsById' que está dentro do 'service.delete' foi usado exatamente 1 vez
+            repository,
+            Mockito.times(1)
+        ).existsById(dependentId);
+
+        Mockito.verify( // garante que o método do 'repository.deleteById' que está dentro do 'service.delete' foi usado exatamente 1 vez
+            repository,
+            Mockito.times(1)
+        ).deleteById(dependentId);
     }
 
 }
