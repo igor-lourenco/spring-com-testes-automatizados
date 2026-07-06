@@ -295,4 +295,31 @@ public class CategoryServiceTests {
         ).deleteById(nonExistingId);
     }
 
+
+    @Test  //  <delete> deve <FazerNada> [quando <IdExistir>]
+    public void deleteShouldDoNothingWhenIdExists(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(repository.existsById(existingId))
+            .thenReturn(true); // repository.existsById → retorna true quando o id existir
+
+        Mockito.doNothing().when(repository)
+            .deleteById(existingId); //  repository.deleteById → não faz nada quando o id existir
+
+
+//      -> Act: execute as ações necessárias
+        Assertions.assertDoesNotThrow(() -> {
+            service.delete(existingId);
+        });
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Mockito.verify( // garante que o método do 'repository.deleteById' que está dentro do 'service.delete' foi usado exatamente 1 vez
+            repository,
+            Mockito.times(1)
+        ).deleteById(existingId);
+    }
+
+
 }
