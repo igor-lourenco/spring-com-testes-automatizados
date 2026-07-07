@@ -1,5 +1,6 @@
 package com.expert.testes.services;
 
+import com.expert.testes.services.exceptions.EmailException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -63,5 +65,31 @@ public class EmailServiceTests {
         Assertions.assertEquals(to, message.getTo()[0]);
         Assertions.assertEquals(subject, message.getSubject());
         Assertions.assertEquals(body, message.getText());
+    }
+
+
+    @Test //  <sendEmail> deve <LancarEmailException> [quando <FalharAoEnviarEmail>]
+    public void sendEmailShouldThrowEmailExceptionWhenFailingToSendEmail() {
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.doThrow(new MailSendException("Erro ao enviar e-mail"))  //  emailSender.send -> lança exceção quando falhar no envio de email
+            .when(emailSender)
+            .send(Mockito.any(SimpleMailMessage.class));
+
+
+//      -> Act: execute as ações necessárias
+        EmailException ex = Assertions.assertThrows(EmailException.class, () ->
+            emailService.sendEmail(to, subject, body)
+        );
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertEquals("Failed to send email: Erro ao enviar e-mail", ex.getMessage());
+
+
+        Mockito.verify( // garante que o método do 'emailSender.send' que está dentro do 'emailService.sendEmail' foi usado exatamente 1 vez
+                emailSender, Mockito.times(1))
+            .send(Mockito.any(SimpleMailMessage.class));
     }
 }
