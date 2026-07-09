@@ -2,12 +2,14 @@ package com.expert.testes.services;
 
 
 import com.expert.testes.DTOs.EmailDTO;
+import com.expert.testes.DTOs.NewPasswordDTO;
 import com.expert.testes.entities.RecoverPassword;
 import com.expert.testes.entities.User;
 import com.expert.testes.repositories.RecoverPasswordRepository;
 import com.expert.testes.repositories.UserRepository;
 import com.expert.testes.services.exceptions.EmailException;
 import com.expert.testes.utils.EmailFactory;
+import com.expert.testes.utils.NewPasswordDTOFactory;
 import com.expert.testes.utils.UserFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +25,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
 
 //@ExtendWith(SpringExtension.class) // Não carrega o contexto, mas permite usar os recursos do Spring com JUnit (teste de unidade: service/component)
@@ -48,6 +51,8 @@ class AuthServiceTests {
     private User userExisting;
     private EmailDTO emailDTOExisting;
     private EmailDTO emailDTONotExisting;
+    private NewPasswordDTO newPasswordDTOWithTokenValid;
+    private RecoverPassword recoverPassword;
 
     @BeforeEach
     void setUp() {
@@ -56,6 +61,15 @@ class AuthServiceTests {
         userExisting = UserFactory.createUserExisting();
         emailDTOExisting = EmailFactory.createEmailDTOExisting();
         emailDTONotExisting = EmailFactory.createEmailDTONotExisting();
+
+        newPasswordDTOWithTokenValid = NewPasswordDTOFactory.createNewPasswordDTOWithTokenValid();
+
+        recoverPassword = RecoverPassword.builder()
+            .email(emailDTOExisting.email())
+            .token(newPasswordDTOWithTokenValid.token())
+            .expiration(Instant.now().plus(30, ChronoUnit.MINUTES))
+            .build();
+
 
         ReflectionTestUtils.setField(authService, "expiration", "30");
         ReflectionTestUtils.setField(authService, "uriRecoverPassword", "http://localhost:3000/recover-password");
@@ -66,7 +80,7 @@ class AuthServiceTests {
 
 
     @Test //  <recoverToken> deve <GerarTokenDeRecuperacao> [quando <EmailExistir>]
-    void recoverTokenShouldGenerateRecoveryTokenWhenEmailExists() {
+    public void recoverTokenShouldGenerateRecoveryTokenWhenEmailExists() {
 //      -> Padrão AAA
 
 //   	-> Arrange: instancie os objetos necessários
@@ -138,7 +152,7 @@ class AuthServiceTests {
 
 
     @Test //  <recoverToken> deve <LancarEmailException> [quando <EmailNaoExistir>]
-    void recoverTokenShouldThrowEmailExceptionWhenEmailDoesNotExists() {
+    public void recoverTokenShouldThrowEmailExceptionWhenEmailDoesNotExists() {
 //      -> Padrão AAA
 
 //   	-> Arrange: instancie os objetos necessários
@@ -160,5 +174,63 @@ class AuthServiceTests {
             repository,
             Mockito.times(1)
         ).findByEmail(emailDTONotExisting.email());
+    }
+
+
+    @Test //  <saveNewPassword> deve <SalvarNovaSenha> [quando <EmailExistirETokenEhValido>]
+    public void saveNewPasswordShouldSaveNewPasswordWhenEmailExistsAndTokenIsValid() {
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(recoverPasswordRepository.searchValidTokens(Mockito.eq(newPasswordDTOWithTokenValid.token()),Mockito.any(Instant.class)))
+            .thenReturn(List.of(recoverPassword)); // recoverPasswordRepository.searchValidTokens → deve retornar List<RecoverPassword> quando token e o Instant forem válidos
+
+        Mockito.when(repository.findByEmail(emailDTOExisting.email()))
+            .thenReturn(Optional.of(userExisting));  // repository.findByEmail → deve retornar User quando email existir
+
+        String encodedPassword = "senha-criptografada";
+        Mockito.when(passwordEncoder.encode(newPasswordDTOWithTokenValid.password()))
+            .thenReturn(encodedPassword); // passwordEncoder.encode → deve retornar a senha criptografada
+
+//      repository.save -> deve retornar o mesmo objeto do tipo User quando receber qualquer objeto do tipo User
+        Mockito.when(repository.save(Mockito.any(User.class)))
+            .thenAnswer(invocation -> invocation.getArgument(0));
+
+
+//      -> Act: execute as ações necessárias
+        authService.saveNewPassword(newPasswordDTOWithTokenValid);
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        ArgumentCaptor<User> userCaptor =  // serve para capturar o argumento que foi passado para um método mockado (ainda não tem nada dentro)
+            ArgumentCaptor.forClass(User.class);
+
+
+        Mockito.verify( //  garante que o método do 'repository.save' que está dentro do 'authService.saveNewPassword' foi usado exatamente 1 vez
+            repository, Mockito.times(1))
+            .save(
+                userCaptor.capture() // // captura o objeto User que foi passado para o método save;
+            );
+
+        User savedUser = userCaptor.getValue(); // representa exatamente o User que o repository tentou salvar
+
+        Assertions.assertEquals(emailDTOExisting.email(), savedUser.getEmail());
+        Assertions.assertEquals(encodedPassword, savedUser.getPassword());
+
+
+//      garante que o método do 'recoverPasswordRepository.searchValidTokens' que está dentro do 'authService.saveNewPassword' foi usado exatamente 1 vez
+        Mockito.verify(recoverPasswordRepository, Mockito.times(1))
+            .searchValidTokens(Mockito.eq(newPasswordDTOWithTokenValid.token()), Mockito.any(Instant.class));
+
+
+//      garante que o método do 'repository.findByEmail' que está dentro do 'authService.saveNewPassword' foi usado exatamente 1 vez
+        Mockito.verify(repository, Mockito.times(1))
+            .findByEmail(emailDTOExisting.email());
+
+
+//      garante que o método do 'passwordEncoder.encode' que está dentro do 'authService.saveNewPassword' foi usado exatamente 1 vez
+        Mockito.verify(passwordEncoder, Mockito.times(1))
+            .encode(newPasswordDTOWithTokenValid.password());
+
     }
 }

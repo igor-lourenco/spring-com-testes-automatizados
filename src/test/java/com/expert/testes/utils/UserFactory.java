@@ -12,7 +12,8 @@ public class UserFactory {
             .id(1L)
             .firstName("Alex")
             .lastName("Green")
-            .email("alex@gmail.com")
+            .email("usuario1@teste.com")
+            .password("senha-antiga")
             .roles(Set.of(new Role(2L, "ROLE_OPERATOR")))
             .build();
     }
