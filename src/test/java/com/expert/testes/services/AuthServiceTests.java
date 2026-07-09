@@ -8,6 +8,7 @@ import com.expert.testes.entities.User;
 import com.expert.testes.repositories.RecoverPasswordRepository;
 import com.expert.testes.repositories.UserRepository;
 import com.expert.testes.services.exceptions.EmailException;
+import com.expert.testes.services.exceptions.EntidadeNotFoundException;
 import com.expert.testes.utils.EmailFactory;
 import com.expert.testes.utils.NewPasswordDTOFactory;
 import com.expert.testes.utils.UserFactory;
@@ -52,6 +53,7 @@ class AuthServiceTests {
     private EmailDTO emailDTOExisting;
     private EmailDTO emailDTONotExisting;
     private NewPasswordDTO newPasswordDTOWithTokenValid;
+    private NewPasswordDTO newPasswordDTOWithTokenInvalid;
     private RecoverPassword recoverPassword;
 
     @BeforeEach
@@ -63,6 +65,7 @@ class AuthServiceTests {
         emailDTONotExisting = EmailFactory.createEmailDTONotExisting();
 
         newPasswordDTOWithTokenValid = NewPasswordDTOFactory.createNewPasswordDTOWithTokenValid();
+        newPasswordDTOWithTokenInvalid = NewPasswordDTOFactory.createNewPasswordDTOWithTokenInvalid();
 
         recoverPassword = RecoverPassword.builder()
             .email(emailDTOExisting.email())
@@ -233,4 +236,31 @@ class AuthServiceTests {
             .encode(newPasswordDTOWithTokenValid.password());
 
     }
+
+
+    @Test //  <saveNewPassword> deve <LancarEntidadeNotFoundException> [quando <TokenEhInvalido>]
+    public void saveNewPasswordShouldThrowEntidadeNotFoundExceptionWhenTokenIsInvalid() {
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(recoverPasswordRepository.searchValidTokens(Mockito.eq(newPasswordDTOWithTokenInvalid.token()),Mockito.any(Instant.class)))
+            .thenReturn(List.of() ); // recoverPasswordRepository.searchValidTokens → deve retornar List vazio quando token for inválido
+
+
+//      -> Act: execute as ações necessárias
+        EntidadeNotFoundException ex = Assertions.assertThrows(EntidadeNotFoundException.class, () -> {
+            authService.saveNewPassword(newPasswordDTOWithTokenInvalid);
+        });
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertEquals("Token inválido", ex.getMessage());
+
+
+        Mockito.verify( // garante que o método 'recoverPasswordRepository.searchValidTokens' que está dentro do 'authService.saveNewPassword' tenha sido chamado exatamente 1 vez
+            recoverPasswordRepository,
+            Mockito.times(1)
+        ).searchValidTokens(Mockito.eq(newPasswordDTOWithTokenInvalid.token()),Mockito.any(Instant.class));
+    }
+
 }
