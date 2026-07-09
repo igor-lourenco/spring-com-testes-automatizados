@@ -55,6 +55,7 @@ class AuthServiceTests {
     private NewPasswordDTO newPasswordDTOWithTokenValid;
     private NewPasswordDTO newPasswordDTOWithTokenInvalid;
     private RecoverPassword recoverPassword;
+    private RecoverPassword recoverPasswordWithEmailInvalid;
 
     @BeforeEach
     void setUp() {
@@ -69,6 +70,12 @@ class AuthServiceTests {
 
         recoverPassword = RecoverPassword.builder()
             .email(emailDTOExisting.email())
+            .token(newPasswordDTOWithTokenValid.token())
+            .expiration(Instant.now().plus(30, ChronoUnit.MINUTES))
+            .build();
+
+        recoverPasswordWithEmailInvalid = RecoverPassword.builder()
+            .email(emailDTONotExisting.email())
             .token(newPasswordDTOWithTokenValid.token())
             .expiration(Instant.now().plus(30, ChronoUnit.MINUTES))
             .build();
@@ -261,6 +268,40 @@ class AuthServiceTests {
             recoverPasswordRepository,
             Mockito.times(1)
         ).searchValidTokens(Mockito.eq(newPasswordDTOWithTokenInvalid.token()),Mockito.any(Instant.class));
+    }
+
+
+    @Test //  <saveNewPassword> deve <LancarEmailException> [quando <EmailNaoExistir>]
+    public void saveNewPasswordShouldThrowEmailExceptionWhenEmailDoesNotExists() {
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(recoverPasswordRepository.searchValidTokens(Mockito.eq(newPasswordDTOWithTokenValid.token()),Mockito.any(Instant.class)))
+            .thenReturn(List.of(recoverPasswordWithEmailInvalid)); // recoverPasswordRepository.searchValidTokens → deve retornar List<RecoverPassword> quando token e o Instant forem válidos
+
+        Mockito.when(repository.findByEmail(emailDTONotExisting.email()))
+            .thenReturn(Optional.empty());  // repository.findByEmail → deve retornar Optional vazio quando email não existir
+
+//      -> Act: execute as ações necessárias
+        EmailException ex = Assertions.assertThrows(EmailException.class, () -> {
+            authService.saveNewPassword(newPasswordDTOWithTokenValid);
+        });
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertEquals("Email não encontrado", ex.getMessage());
+
+
+        Mockito.verify( // garante que o método 'recoverPasswordRepository.searchValidTokens' que está dentro do 'authService.saveNewPassword' tenha sido chamado exatamente 1 vez
+            recoverPasswordRepository,
+            Mockito.times(1)
+        ).searchValidTokens(Mockito.eq(newPasswordDTOWithTokenValid.token()),Mockito.any(Instant.class));
+
+
+        Mockito.verify( // garante que o método 'repository.findByEmail' que está dentro do 'authService.saveNewPassword' tenha sido chamado exatamente 1 vez
+            repository,
+            Mockito.times(1)
+        ).findByEmail(emailDTONotExisting.email());
     }
 
 }
