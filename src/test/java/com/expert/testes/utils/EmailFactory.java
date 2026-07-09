@@ -5,7 +5,11 @@ import com.expert.testes.DTOs.EmailDTO;
 public class EmailFactory {
 
     public static EmailDTO createEmailDTOExisting(){
-        return new EmailDTO("usuario@teste.com");
+        return new EmailDTO("usuario1@teste.com");
+    }
+
+    public static EmailDTO createEmailDTONotExisting(){
+        return new EmailDTO("usuario2@teste.com");
     }
 }
 

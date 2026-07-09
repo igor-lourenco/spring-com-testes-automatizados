@@ -6,6 +6,7 @@ import com.expert.testes.entities.RecoverPassword;
 import com.expert.testes.entities.User;
 import com.expert.testes.repositories.RecoverPasswordRepository;
 import com.expert.testes.repositories.UserRepository;
+import com.expert.testes.services.exceptions.EmailException;
 import com.expert.testes.utils.EmailFactory;
 import com.expert.testes.utils.UserFactory;
 import org.junit.jupiter.api.Assertions;
@@ -24,36 +25,42 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
-@ExtendWith(MockitoExtension.class)
+//@ExtendWith(SpringExtension.class) // Não carrega o contexto, mas permite usar os recursos do Spring com JUnit (teste de unidade: service/component)
+@ExtendWith(MockitoExtension.class) // Não carrega o contexto, mas permite usar os recursos do Spring com JUnit (teste de unidade: service/component)
 class AuthServiceTests {
 
-    @Mock
+    @Mock // Cria uma simulação, evita conexões reais com o banco de dados e permite programar retornos fictícios para os métodos do repositório.
     private UserRepository repository;
 
-    @Mock
+    @Mock // Cria uma simulação, evita conexões reais com o banco de dados e permite programar retornos fictícios para os métodos do repositório.
     private RecoverPasswordRepository recoverPasswordRepository;
 
-    @Mock
+    @Mock // Cria uma simulação, evita conexões reais com o banco de dados e permite programar retornos fictícios para os métodos do repositório.
     private EmailService emailService;
 
-    @Mock
+    @Mock // Cria uma simulação, evita conexões reais com o banco de dados e permite programar retornos fictícios para os métodos do repositório.
     private PasswordEncoder passwordEncoder;
 
-    @InjectMocks
+    @InjectMocks // Define o objeto principal que está sendo testado, cria uma instância real dessa classe e injeta automaticamente todos os mocks criados nela
     private AuthService authService;
 
 
     private User userExisting;
     private EmailDTO emailDTOExisting;
+    private EmailDTO emailDTONotExisting;
+
     @BeforeEach
     void setUp() {
+//      Os valores não têm nenhum vínculo com o banco de dados, são apenas valores de controle para simulação
 
         userExisting = UserFactory.createUserExisting();
         emailDTOExisting = EmailFactory.createEmailDTOExisting();
+        emailDTONotExisting = EmailFactory.createEmailDTONotExisting();
 
         ReflectionTestUtils.setField(authService, "expiration", "30");
         ReflectionTestUtils.setField(authService, "uriRecoverPassword", "http://localhost:3000/recover-password");
     }
+
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
 
@@ -127,5 +134,31 @@ class AuthServiceTests {
         Mockito.verify(// garante que o método do 'repository.findByEmail' que está dentro do 'authService.recoverToken' foi usado exatamente 1 vez
             repository, Mockito.times(1))
             .findByEmail(emailDTOExisting.email());
+    }
+
+
+    @Test //  <recoverToken> deve <LancarEmailException> [quando <EmailNaoExistir>]
+    void recoverTokenShouldThrowEmailExceptionWhenEmailDoesNotExists() {
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(repository.findByEmail(emailDTONotExisting.email()))
+            .thenReturn(Optional.empty()); // repository.findByEmail → deve retornar Optional vazio quando email não existir
+
+
+//      -> Act: execute as ações necessárias
+        EmailException ex = Assertions.assertThrows(EmailException.class, () -> {
+            authService.recoverToken(emailDTONotExisting);
+        });
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertEquals("Email não encontrado", ex.getMessage());
+
+
+        Mockito.verify( // garante que o método 'repository.findByEmail' que está dentro do 'authService.recoverToken' tenha sido chamado exatamente 1 vez
+            repository,
+            Mockito.times(1)
+        ).findByEmail(emailDTONotExisting.email());
     }
 }

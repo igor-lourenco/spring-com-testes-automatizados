@@ -29,6 +29,8 @@ public class EmailServiceTests {
 
     @BeforeEach
     void setUp() {
+//      Os valores não têm nenhum vínculo com o banco de dados, são apenas valores de controle para simulação
+
         to = "destinatario@teste.com";
         subject = "Assunto de teste";
         body = "Corpo do e-mail";
