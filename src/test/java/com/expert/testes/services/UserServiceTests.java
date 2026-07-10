@@ -1,6 +1,7 @@
 package com.expert.testes.services;
 
 import com.expert.testes.repositories.UserRepository;
+import com.expert.testes.services.exceptions.EntidadeNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,6 +42,32 @@ public class UserServiceTests {
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
 
+
+    @Test  //  <delete> deve <LancarEntidadeNotFoundException> [quando <IdNaoExistir>]
+    public void deleteShouldThrowEntidadeNotFoundExceptionWhenIdDoesNotExists(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(repository.existsById(nonExistingId)).thenReturn(false); // repository.existsById → retorna false quando o id não existir
+
+
+//      -> Act: execute as ações necessárias
+        Assertions.assertThrows(EntidadeNotFoundException.class, () -> {
+            service.delete(nonExistingId);
+        });
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Mockito.verify( // garante que o método do 'repository.existsById' que está dentro do 'service.delete' foi usado exatamente 1 vez
+            repository,
+            Mockito.times(1)
+        ).existsById(nonExistingId);
+
+        Mockito.verify( // garante que o método do 'repository.deleteById' que está dentro do 'service.delete' não tenha usado.
+            repository,
+            Mockito.never()
+        ).deleteById(nonExistingId);
+    }
 
 
     @Test  //  <delete> deve <FazerNada> [quando <IdExistir>]
