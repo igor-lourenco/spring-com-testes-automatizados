@@ -74,6 +74,31 @@ public class UserServiceTests {
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
 
 
+
+    @Test  //  <update> deve <AtualizarEntidade> [quando <IdExistirERoleEhNull>]
+    public void updateShouldUpdateEntidadeWhenIdExistsAndRoleIsNull(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(repository.findById(existingId))
+            .thenReturn(Optional.of(userExisting)); // repository.findById → deve retornar Optional de User quando id existir
+
+
+//      -> Act: execute as ações necessárias
+        UserDTO userDTO = service.update(existingId, userDTOExistingWithRoleDTOIsNull);
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertNotNull(userDTO);
+
+        Mockito.verify( // garante que o método do 'repository.findById' que está dentro do 'service.update' foi usado exatamente 1 vez
+            repository,
+            Mockito.times(1)
+        ).findById(existingId);
+
+    }
+
+
     @Test  //  <update> deve <LancarEntidadeNotFoundException> [quando <RoleIdNaoExistir>]
     public void updateShouldThrowEntidadeNotFoundExceptionWhenRoleIdDoesNotExists(){
 //      -> Padrão AAA
