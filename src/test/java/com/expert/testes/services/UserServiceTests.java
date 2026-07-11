@@ -9,6 +9,7 @@ import com.expert.testes.services.exceptions.DatabaseException;
 import com.expert.testes.services.exceptions.EntidadeNotFoundException;
 import com.expert.testes.utils.RoleFactory;
 import com.expert.testes.utils.UserFactory;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -71,6 +72,44 @@ public class UserServiceTests {
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
 
+
+
+    @Test  //  <update> deve <LancarEntityNotFoundException> [quando <ErroEhGenerico>]
+    public void updateShouldThrowEntityNotFoundExceptionWhenErrorIsGeneric(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(repository.findById(existingId))
+            .thenReturn(Optional.of(userExisting)); // repository.findById → deve retornar Optional de User quando id existir
+
+        Mockito.doThrow(new EntityNotFoundException("Erro genérico"))
+            .when(roleRepository)  // roleRepository.getReferenceById → lança EntityNotFoundException quando roleId não existir (pra cair no throw e)
+            .getReferenceById(notExistingRoleId);
+
+
+//      -> Act: execute as ações necessárias
+        EntityNotFoundException ex = Assertions.assertThrows(EntityNotFoundException.class, () -> {
+            service.update(existingId, userDTOExistingWithRoleDTODoesNotExisting);
+        });
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertTrue(ex.getMessage().contains("Erro genérico"));
+
+
+        Mockito.verify( // garante que o método do 'repository.findById' que está dentro do 'service.update' foi usado exatamente 1 vez
+            repository,Mockito.times(1)
+        ).findById(existingId);
+
+
+        Mockito.verify( // garante que o método do 'roleRepository.getReferenceById' que está dentro do 'service.update' foi usado exatamente 1 vez
+            roleRepository,Mockito.times(1)
+        ).getReferenceById(notExistingRoleId);
+
+
+        Mockito // garante que o 'repository' que está dentro do 'service.update' não foi usado além do esperado após a execução completa
+            .verifyNoMoreInteractions(repository);
+    }
 
 
     @Test  //  <update> deve <LancarEntidadeNotFoundException> [quando <IdNaoExistir>]
