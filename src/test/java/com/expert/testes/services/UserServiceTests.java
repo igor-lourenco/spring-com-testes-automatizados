@@ -83,6 +83,38 @@ public class UserServiceTests {
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
 
 
+
+    @Test  //  <insert> deve <LancarEntityNotFoundException> [quando <ErroEhGenerico>]
+    public void insertShouldThrowEntityNotFoundExceptionWhenErrorIsGeneric(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+
+        Mockito.doThrow(new EntityNotFoundException("Erro genérico"))
+            .when(roleRepository)  // roleRepository.findByAuthority → lança EntityNotFoundException quando role não existir (pra cair no throw e)
+            .findByAuthority("ROLE_OPERATOR");
+
+
+//      -> Act: execute as ações necessárias
+        EntityNotFoundException ex = Assertions.assertThrows(EntityNotFoundException.class, () -> {
+            service.insert(userWithPasswordDTOExisting);
+        });
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertTrue(ex.getMessage().contains("Erro genérico"));
+
+
+        Mockito.verify( // garante que o método do 'roleRepository.findByAuthority' que está dentro do 'service.insert' foi usado exatamente 1 vez
+            roleRepository,Mockito.times(1)
+        ).findByAuthority("ROLE_OPERATOR");
+
+
+        Mockito // garante que o 'repository' que está dentro do 'service.insert' não foi usado além do esperado após a execução completa
+            .verifyNoMoreInteractions(repository);
+    }
+
+
     @Test  //  <insert> deve <LancarEntidadeNotFoundException> [quando <roleIdNaoExistir>]
     public void insertShouldThrowEntidadeNotFoundExceptionWhenRoleIdDoesNotExists(){
 //      -> Padrão AAA
