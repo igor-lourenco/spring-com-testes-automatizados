@@ -84,6 +84,40 @@ public class UserServiceTests {
 
 
 
+    @Test  //  <insert> deve <PersistirObjeto> [quando <>]
+    public void insertShouldPersistObject(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(roleRepository.findByAuthority("ROLE_OPERATOR"))
+            .thenReturn(Optional.of(roleExisting)); // roleRepository.findByAuthority → deve retornar Optional de Role quando role existir
+
+        Mockito.when(repository.save(Mockito.any(User.class)))
+            .thenReturn(userExisting); // repository.save → deve retornar um User quando receber qualquer objeto do tipo User
+
+
+//      -> Act: execute as ações necessárias
+        UserDTO userDTO = service.insert(userWithPasswordDTOExisting);
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertNotNull(userDTO);
+        Assertions.assertEquals(existingId, userDTO.id());
+
+
+        Mockito.verify( // garante que o método do 'roleRepository.findByAuthority' que está dentro do 'service.insert' foi usado exatamente 1 vez
+            roleRepository,
+            Mockito.times(1)
+        ).findByAuthority("ROLE_OPERATOR");
+
+        Mockito.verify( // garante que o método 'repository.save' que está dentro do 'service.insert' foi usado exatamente 1 vez
+                repository,
+                Mockito.times(1))
+            .save(Mockito.any(User.class));
+    }
+
+
+
     @Test  //  <insert> deve <LancarEntityNotFoundException> [quando <ErroEhGenerico>]
     public void insertShouldThrowEntityNotFoundExceptionWhenErrorIsGeneric(){
 //      -> Padrão AAA
