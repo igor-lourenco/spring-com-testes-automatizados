@@ -1,6 +1,7 @@
 package com.expert.testes.utils;
 
 import com.expert.testes.DTOs.UserDTO;
+import com.expert.testes.DTOs.UserWithPasswordDTO;
 import com.expert.testes.entities.Role;
 import com.expert.testes.entities.User;
 
@@ -83,5 +84,39 @@ public class UserFactory {
             .build();
 
         return new UserDTO(user);
+    }
+
+
+    public static UserWithPasswordDTO createdUserWithPasswordDTOExistingWithRoleDTODoesNotExisting(){
+//        Set<Role> roles =  new HashSet<>();
+//        roles.add(RoleFactory.createRoleDoesNotExiting());
+
+        User user = User.builder()
+            .id(1L)
+            .firstName("Bob")
+            .lastName("Blue")
+            .email("usuario2@teste.com")
+            .password("senha-antiga")
+//            .roles(roles)
+            .build();
+
+        return new UserWithPasswordDTO(user);
+    }
+
+
+    public static UserWithPasswordDTO createdUserWithPasswordDTOExisting(){
+//        Set<Role> roles =  new HashSet<>();
+//        roles.add(RoleFactory.createRoleDoesNotExiting());
+
+        User user = User.builder()
+            .id(1L)
+            .firstName("Bob")
+            .lastName("Blue")
+            .email("usuario2@teste.com")
+            .password("senha-antiga")
+//            .roles(roles)
+            .build();
+
+        return new UserWithPasswordDTO(user);
     }
 }

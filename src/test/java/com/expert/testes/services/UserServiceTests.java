@@ -1,6 +1,7 @@
 package com.expert.testes.services;
 
 import com.expert.testes.DTOs.UserDTO;
+import com.expert.testes.DTOs.UserWithPasswordDTO;
 import com.expert.testes.entities.Role;
 import com.expert.testes.entities.User;
 import com.expert.testes.repositories.RoleRepository;
@@ -20,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -32,6 +34,9 @@ public class UserServiceTests {
 
     @Mock // Cria uma simulação, evita conexões reais com o banco de dados e permite programar retornos fictícios para os métodos do repositório.
     private RoleRepository roleRepository;
+
+    @Mock // Cria uma simulação, evita conexões reais com o banco de dados e permite programar retornos fictícios para os métodos do repositório.
+    private PasswordEncoder passwordEncoder;
 
     @InjectMocks // Define o objeto principal que está sendo testado, cria uma instância real dessa classe e injeta automaticamente todos os mocks criados nela
     private UserService service;
@@ -48,6 +53,8 @@ public class UserServiceTests {
     private UserDTO userDTOExisting;
     private UserDTO userDTOExistingWithRoleDTOIsNull;
     private UserDTO userDTOExistingWithRoleDTODoesNotExisting;
+    private UserWithPasswordDTO userWithPasswordDTOExistingWithRoleDTODoesNotExisting;
+    private UserWithPasswordDTO userWithPasswordDTOExisting;
     private Role roleExisting;
 
 
@@ -66,12 +73,53 @@ public class UserServiceTests {
         userDTOExistingWithRoleDTOIsNull = UserFactory.createdUserDTOExistingWithRoleDTOIsNull();
         userDTODoesNotExisting = UserFactory.createdUserDTODoesNotExisting();
         userDTOExistingWithRoleDTODoesNotExisting = UserFactory.createdUserDTOExistingWithRoleDTODoesNotExisting();
+        userWithPasswordDTOExisting = UserFactory.createdUserWithPasswordDTOExisting();
+        userWithPasswordDTOExistingWithRoleDTODoesNotExisting = UserFactory.createdUserWithPasswordDTOExistingWithRoleDTODoesNotExisting();
         roleExisting = RoleFactory.createRoleExiting();
 
     }
 
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
+
+
+    @Test  //  <insert> deve <LancarEntidadeNotFoundException> [quando <roleIdNaoExistir>]
+    public void insertShouldThrowEntidadeNotFoundExceptionWhenRoleIdDoesNotExists(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.doThrow( // roleRepository.findByAuthority → lança EntityNotFoundException quando role não existir
+                new EntityNotFoundException("Erro", new ObjectNotFoundException(notExistingRoleId, "Role")))
+            .when(roleRepository).findByAuthority("ROLE_OPERATOR");
+
+        Mockito.when(passwordEncoder.encode(userWithPasswordDTOExistingWithRoleDTODoesNotExisting.password()))
+            .thenReturn( "senha-criptografada"); // passwordEncoder.encode → deve retornar a senha criptografada
+
+
+//      -> Act: execute as ações necessárias
+        EntidadeNotFoundException ex = Assertions.assertThrows(EntidadeNotFoundException.class, () -> {
+            service.insert(userWithPasswordDTOExistingWithRoleDTODoesNotExisting);
+        });
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertTrue(ex.getMessage().contains("Role não encontrado: " + notExistingRoleId));
+
+
+        Mockito.verify( // garante que o método do 'roleRepository.findByAuthority' que está dentro do 'service.insert' foi usado exatamente 1 vez
+            roleRepository, Mockito.times(1)
+        ).findByAuthority("ROLE_OPERATOR");
+
+
+//      garante que o método do 'passwordEncoder.encode' que está dentro do 'service.insert' foi usado exatamente 1 vez
+        Mockito.verify(passwordEncoder, Mockito.times(1))
+            .encode(userWithPasswordDTOExistingWithRoleDTODoesNotExisting.password());
+
+
+        Mockito.verify( // garante que o método 'repository.save' que está dentro do 'service.insert' não tenha sido chamado
+                repository, Mockito.never())
+            .save(Mockito.any());
+    }
 
 
     @Test  //  <update> deve <AtualizarEntidade> [quando <IdExistirAndRoleExistir>]
