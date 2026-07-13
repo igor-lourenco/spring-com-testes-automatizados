@@ -22,7 +22,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -98,6 +97,33 @@ public class UserServiceTests {
 
 
 
+    @Test  //  <findById> deve <RetornarUserDTO> [quando <IdExistir>]
+    public void findByIdShouldReturnUserDTOWhenIdExists(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(repository.findById(existingId))
+            .thenReturn(Optional.of(userExisting)); // repository.findById → deve retornar Optional de User quando id existir
+
+        Mockito.when(authSecurity.getUserId())
+            .thenReturn(userExisting); //authSecurity.getUserId → deve retornar User autenticado
+
+
+//      -> Act: execute as ações necessárias
+        UserDTO productDTO = service.findById(existingId);
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertNotNull(productDTO);
+        Assertions.assertEquals(1, productDTO.id());
+        Assertions.assertEquals(userExisting.getRoles().size(), productDTO.rolesDTO().size());
+
+
+        Mockito.verify( // garante que o método 'repository.findById' que está dentro do 'service.findById' tenha sido chamado exatamente 1 vez
+            repository,
+            Mockito.times(1)
+        ).findById(existingId);
+    }
 
 
     @Test  //  <findById> deve <LancarEntidadeNotFoundException> [quando <IdNaoExistir>]
