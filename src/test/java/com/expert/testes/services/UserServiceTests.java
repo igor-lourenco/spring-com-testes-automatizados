@@ -6,6 +6,7 @@ import com.expert.testes.entities.Role;
 import com.expert.testes.entities.User;
 import com.expert.testes.repositories.RoleRepository;
 import com.expert.testes.repositories.UserRepository;
+import com.expert.testes.security.services.AuthSecurity;
 import com.expert.testes.services.exceptions.DatabaseException;
 import com.expert.testes.services.exceptions.EntidadeNotFoundException;
 import com.expert.testes.utils.RoleFactory;
@@ -21,8 +22,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
 import java.util.Optional;
 
 //@ExtendWith(SpringExtension.class) // Não carrega o contexto, mas permite usar os recursos do Spring com JUnit (teste de unidade: service/component)
@@ -37,6 +43,9 @@ public class UserServiceTests {
 
     @Mock // Cria uma simulação, evita conexões reais com o banco de dados e permite programar retornos fictícios para os métodos do repositório.
     private PasswordEncoder passwordEncoder;
+
+    @Mock // Cria uma simulação, evita conexões reais com o banco de dados e permite programar retornos fictícios para os métodos do repositório.
+    private AuthSecurity authSecurity;
 
     @InjectMocks // Define o objeto principal que está sendo testado, cria uma instância real dessa classe e injeta automaticamente todos os mocks criados nela
     private UserService service;
@@ -57,6 +66,8 @@ public class UserServiceTests {
     private UserWithPasswordDTO userWithPasswordDTOExisting;
     private Role roleExisting;
 
+    private PageImpl<User> page;
+    private Pageable pageable;
 
     @BeforeEach // Preparação antes de cada teste da classe
     void setUp() throws Exception{
@@ -77,11 +88,41 @@ public class UserServiceTests {
         userWithPasswordDTOExistingWithRoleDTODoesNotExisting = UserFactory.createdUserWithPasswordDTOExistingWithRoleDTODoesNotExisting();
         roleExisting = RoleFactory.createRoleExiting();
 
+        page = new PageImpl<>(List.of(userExisting));
+        pageable = PageRequest.of(0, 10);
+
     }
 
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
 
+
+
+
+
+    @Test  //  <findById> deve <LancarEntidadeNotFoundException> [quando <IdNaoExistir>]
+    public void findByIdShouldThrowEntidadeNotFoundExceptionWhenIdDoesNotExists(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(repository.findById(nonExistingId))
+            .thenReturn(Optional.empty()); // repository.findById → deve retornar Optional vazio quando id não existir
+
+
+//      -> Act: execute as ações necessárias
+        EntidadeNotFoundException ex = Assertions.assertThrows(EntidadeNotFoundException.class, () -> {
+            service.findById(nonExistingId);
+        });
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertEquals("User não encontrado: " + nonExistingId, ex.getMessage());
+
+
+        Mockito.verify( // garante que o método 'repository.findById' que está dentro do 'service.findById' tenha sido chamado exatamente 1 vez
+            repository,Mockito.times(1)
+        ).findById(nonExistingId);
+    }
 
 
     @Test  //  <insert> deve <PersistirObjeto> [quando <>]
