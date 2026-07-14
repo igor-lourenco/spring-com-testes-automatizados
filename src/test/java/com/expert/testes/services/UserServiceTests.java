@@ -22,6 +22,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -95,6 +96,31 @@ public class UserServiceTests {
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
 
+
+
+    @Test  //  <findAllPaged> deve <RetornarPageDeUser> [quando <>]
+    public void findAllPagedShouldReturnPageOfUser(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(repository.findAll(Mockito.any(Pageable.class)))
+            .thenReturn(page); // repository.findAll → deve retornar um Page quando receber qualquer objeto do tipo Pageable
+
+
+//      -> Act: execute as ações necessárias
+        Page<UserDTO> result = service.findAllPaged(pageable);
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertNotNull(result);
+        Assertions.assertFalse(result.isEmpty());
+        Assertions.assertEquals(1, result.getTotalElements());
+
+        Mockito.verify( // garante que o método 'repository.findAll' que está dentro do 'service.findAllPaged' tenha sido chamado exatamente 1 vez
+            repository,
+            Mockito.times(1)
+        ).findAll(pageable);
+    }
 
 
     @Test  //  <findById> deve <RetornarUserDTO> [quando <IdExistir>]
