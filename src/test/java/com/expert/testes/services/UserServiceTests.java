@@ -97,6 +97,28 @@ public class UserServiceTests {
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
 
 
+    @Test  //  <findAll> deve <RetornarListaDeUser> [quando <>]
+    public void findAllShouldReturnListOfUser(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(repository.findAll())
+            .thenReturn(List.of(userExisting)); // repository.findAll → deve retornar um List de User
+
+
+//      -> Act: execute as ações necessárias
+        List<UserDTO> result = service.findAll();
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertNotNull(result);
+        Assertions.assertFalse(result.isEmpty());
+        Assertions.assertEquals(1, result.size());
+
+        Mockito.verify( // garante que o método 'repository.findAll' que está dentro do 'service.findAll' tenha sido chamado exatamente 1 vez
+            repository,Mockito.times(1)
+        ).findAll();
+    }
 
     @Test  //  <findAllPaged> deve <RetornarPageDeUser> [quando <>]
     public void findAllPagedShouldReturnPageOfUser(){
