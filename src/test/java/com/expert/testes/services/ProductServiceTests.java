@@ -197,6 +197,36 @@ public class ProductServiceTests {
     }
 
 
+
+    @Test  //  <insert> deve <LancarEntityNotFoundException> [quando <ErroEhGenerico>]
+    public void insertShouldThrowEntityNotFoundExceptionWhenErrorIsGeneric(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.doThrow(new EntityNotFoundException("Erro genérico"))
+            .when(categoryRepository)  // categoryRepository.getReferenceById → lança EntityNotFoundException quando categoryId não existir (pra cair no throw e)
+            .getReferenceById(existingCategoryId);
+
+
+//      -> Act: execute as ações necessárias
+        EntityNotFoundException ex = Assertions.assertThrows(EntityNotFoundException.class, () -> {
+            service.insert(productDTOWithIdNullAndCategoryDTO);
+        });
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertTrue(ex.getMessage().contains("Erro genérico"));
+
+
+        Mockito.verify( // garante que o método do 'roleRepository.findByAuthority' que está dentro do 'service.insert' foi usado exatamente 1 vez
+            categoryRepository,Mockito.times(1)
+        ).getReferenceById(existingCategoryId);
+
+
+        Mockito // garante que o 'repository' que está dentro do 'service.insert' não foi usado além do esperado após a execução completa
+            .verifyNoMoreInteractions(repository);
+    }
+
     @Test  //  <insert> deve <LancarEntidadeNotFoundException> [quando <CategoryIdNaoExistir>]
     public void insertShouldThrowEntidadeNotFoundExceptionWhenCategoryIdDoesNotExists(){
 //      -> Padrão AAA
