@@ -258,6 +258,44 @@ public class ProductServiceTests {
     }
 
 
+    @Test  //  <update> deve <LancarEntityNotFoundException> [quando <ErroEhGenerico>]
+    public void updateShouldThrowEntityNotFoundExceptionWhenErrorIsGeneric(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(repository.findById(existingId))
+            .thenReturn(Optional.of(productWithCategory)); // repository.findById → deve retornar Optional de Product quando id existir
+
+        Mockito.doThrow(new EntityNotFoundException("Erro genérico"))
+            .when(categoryRepository)  // categoryRepository.getReferenceById → lança EntityNotFoundException quando categoryId não existir (pra cair no throw e)
+            .getReferenceById(existingCategoryId);
+
+
+//      -> Act: execute as ações necessárias
+        EntityNotFoundException ex = Assertions.assertThrows(EntityNotFoundException.class, () -> {
+            service.update(existingId, productDTOWithCategoryDTO);
+        });
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertTrue(ex.getMessage().contains("Erro genérico"));
+
+
+        Mockito.verify( // garante que o método do 'repository.findById' que está dentro do 'service.update' foi usado exatamente 1 vez
+            repository,Mockito.times(1)
+        ).findById(existingId);
+
+
+        Mockito.verify( // garante que o método do 'categoryRepository.getReferenceById' que está dentro do 'service.update' foi usado exatamente 1 vez
+            categoryRepository,Mockito.times(1)
+        ).getReferenceById(existingCategoryId);
+
+
+        Mockito // garante que o 'repository' que está dentro do 'service.update' não foi usado além do esperado após a execução completa
+            .verifyNoMoreInteractions(repository);
+    }
+
+
     @Test  //  <update> deve <LancarEntidadeNotFoundException> [quando <CategoryIdNaoExistir>]
     public void updateShouldThrowEntidadeNotFoundExceptionWhenCategoryIdDoesNotExists(){
 //      -> Padrão AAA
