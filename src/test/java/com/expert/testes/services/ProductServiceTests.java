@@ -3,6 +3,7 @@ package com.expert.testes.services;
 import com.expert.testes.DTOs.ProductDTO;
 import com.expert.testes.entities.Category;
 import com.expert.testes.entities.Product;
+import com.expert.testes.projections.ProductProjection;
 import com.expert.testes.repositories.CategoryRepository;
 import com.expert.testes.repositories.ProductRepository;
 import com.expert.testes.services.exceptions.DatabaseException;
@@ -47,9 +48,15 @@ public class ProductServiceTests {
     private ProductDTO productDTOWithCategoryDTO;            // ProductDTO com CategoryDTO existente
     private ProductDTO productDTOWithIdNullAndCategoryDTO;   // ProductDTO com Id null e CategoryDTO existente
 
+    private Product productWithCategoryDTONull;   // Product com Id e Category Null
+    private ProductDTO productDTOWithCategoryDTONull;   // ProductDTO com Id null e CategoryDTO Null
+
     private PageImpl<Product> page;
     private Pageable pageable;
 
+    private ProductProjection projection;
+    Page<ProductProjection> projectionPage;
+    Pageable pageRequest = PageRequest.of(0, 10);
 
     @InjectMocks // Define o objeto principal que está sendo testado, cria uma instância real dessa classe e injeta automaticamente todos os mocks criados nela
     private ProductService service;
@@ -83,9 +90,18 @@ public class ProductServiceTests {
         productDTOWithIdNullAndCategoryDTO = ProductFactory                                              // ProductDTO com Id null e CategoryDTO existente
             .createDTOWithCategoryDTO(null, existingCategoryId);
 
+        productWithCategoryDTONull = ProductFactory.createProductWithCategoryDTONull(existingId);
+        productDTOWithCategoryDTONull = ProductFactory.createProductDTOWithCategoryDTONull(null);
+
         page = new PageImpl<>(List.of(product));
         pageable = PageRequest.of(0, 10);
 
+        projection = Mockito.mock(ProductProjection.class);
+        projectionPage = new PageImpl<>(
+            List.of(projection),
+            PageRequest.of(0, 10),
+            1
+        );
     }
 
 
@@ -220,6 +236,30 @@ public class ProductServiceTests {
         .save(Mockito.any(Product.class));
     }
 
+
+    @Test  //  <insert> deve <PersistirProduct> [quando <ProductIdEhNullEListCategoryDTOEhNull>]
+    public void insertShouldPersistProductWhenProductIdIsNullAndListCategoryDTOIsNull(){
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        Mockito.when(repository.save(Mockito.any(Product.class)))
+            .thenReturn(productWithCategoryDTONull); // repository.save → deve retornar um Product com Category null quando receber qualquer objeto do tipo Product
+
+
+//      -> Act: execute as ações necessárias
+        ProductDTO productDTO = service.insert(productDTOWithCategoryDTONull);
+
+
+//      -> Assert: declare o que deveria acontecer (resultado esperado)
+        Assertions.assertNotNull(productDTO);
+        Assertions.assertEquals(existingId, productDTO.id());
+
+
+        Mockito.verify( // garante que o método 'repository.save' que está dentro do 'service.insert' foi usado exatamente 1 vez
+            repository,
+            Mockito.times(1))
+        .save(Mockito.any(Product.class));
+    }
 
 
     @Test  //  <insert> deve <LancarEntityNotFoundException> [quando <ErroEhGenerico>]

@@ -59,4 +59,21 @@ public class ProductFactory {
         Product product = createWitCategory(productId, categoryId);
         return new ProductDTO(product, product.getCategories());
     }
+
+    public static Product createProductWithCategoryDTONull(Long productId){
+        return Product.builder()
+            .id(productId)
+            .name("Phone")
+            .description("Good Phone")
+            .price(new BigDecimal(800.0))
+            .imgUrl("https://img.com/phone.png")
+            .categories(null)
+            .build();
+    }
+
+    public static ProductDTO createProductDTOWithCategoryDTONull(Long productId){
+        Product product = createProductWithCategoryDTONull(productId);
+        return new ProductDTO(product);
+    }
+
 }
