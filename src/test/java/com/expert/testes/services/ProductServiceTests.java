@@ -111,6 +111,42 @@ public class ProductServiceTests {
 
 
 
+    @Test  //  <findAllPagedProductProjection> deve <RetornarPageDeProductDTO> [quando <NaoReceberListaDeCategoryIds>]
+    void findAllPagedProductProjectionShouldReturnPageOfProductDTOWhenDoesNotReceiveTheListOfCategoryIds() {
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+        List<Long> expectedCategoryIds = List.of();
+        List<Long> expectedProductIds = List.of(1L);
+
+        Mockito.when(projection.getId()).thenReturn(1L);
+
+        Mockito.when(repository.searchProducts(expectedCategoryIds, "Phone", pageRequest))
+            .thenReturn(projectionPage); // repository.searchProducts → deve retornar Page de ProductProjection
+
+        Mockito.when(repository.searchProductsWithCategories(expectedProductIds))
+            .thenReturn(List.of(productWithCategory)); // repository.searchProductsWithCategories → deve retornar um List de Product
+
+//      -> Act: execute as ações necessárias
+        Page<ProductDTO> result = service.findAllPagedProductProjection("Phone", "0",pageRequest);
+
+//      -> Assert: declare o que deveria acontecer
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(1, result.getTotalElements());
+        Assertions.assertEquals(1, result.getContent().size());
+        Assertions.assertEquals(pageable, result.getPageable());
+
+        Mockito.verify( // garante que o método 'repository.searchProducts' que está dentro do 'service.findAllPagedProductProjection' tenha sido chamado exatamente 1 vez
+                repository, Mockito.times(1))
+            .searchProducts(expectedCategoryIds, "Phone", pageRequest);
+//
+        Mockito.verify( // garante que o método 'repository.searchProductsWithCategories' que está dentro do 'service.findAllPagedProductProjection' tenha sido chamado exatamente 1 vez
+                repository, Mockito.times(1))
+            .searchProductsWithCategories(expectedProductIds);
+    }
+
+
+
     @Test  //  <findAllPagedProductProjection> deve <LancarNumberFormatException> [quando <CategoryIdNaoForNumero>]
     public void findAllPagedProductProjectionShouldThrowNumberFormatExceptionWhenCategoryIdNotForNumber() {
 //      -> Padrão AAA
