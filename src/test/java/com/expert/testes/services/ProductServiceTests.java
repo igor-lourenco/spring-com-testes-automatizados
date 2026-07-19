@@ -8,6 +8,7 @@ import com.expert.testes.repositories.CategoryRepository;
 import com.expert.testes.repositories.ProductRepository;
 import com.expert.testes.services.exceptions.DatabaseException;
 import com.expert.testes.services.exceptions.EntidadeNotFoundException;
+import com.expert.testes.services.exceptions.NumeroFormatException;
 import com.expert.testes.utils.CategoryFactory;
 import com.expert.testes.utils.ProductFactory;
 import jakarta.persistence.EntityNotFoundException;
@@ -108,6 +109,27 @@ public class ProductServiceTests {
 
 //	Nomenclatura de um teste: <AÇÃO> should <EFEITO> [when <CENÁRIO>]
 
+
+
+    @Test  //  <findAllPagedProductProjection> deve <LancarNumberFormatException> [quando <CategoryIdNaoForNumero>]
+    public void findAllPagedProductProjectionShouldThrowNumberFormatExceptionWhenCategoryIdNotForNumber() {
+//      -> Padrão AAA
+
+//   	-> Arrange: instancie os objetos necessários
+
+//      -> Act: execute as ações necessárias
+        NumeroFormatException ex = Assertions.assertThrows(NumeroFormatException.class, () -> {
+            service.findAllPagedProductProjection("Phone", "0L", pageRequest);
+        });
+
+//      -> Assert: declare o que deveria acontecer
+        Assertions.assertTrue(ex.getMessage().contains("Parâmetro categoryId só pode conter números"));
+
+        Mockito.verify( // garante que o método do 'repository.searchProducts' que está dentro do 'service.findAllPagedProductProjection' não tenha usado.
+            repository,
+            Mockito.never()
+        ).searchProducts(List.of(), "Phone", pageRequest);
+    }
 
 
     @Test  //  <findAll> deve <RetornarListaDeUser> [quando <>]
