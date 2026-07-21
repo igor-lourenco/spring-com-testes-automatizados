@@ -243,3 +243,11 @@ Uma das principais vantagens dos testes unitários por exemplo é proteger os re
 ### Rest Assured
 
 * **REST Assured** é uma biblioteca usada para automatizar testes de API em aplicações, permitindo testar e validar serviços REST de uma forma simples.
+
+---
+
+| Ferramentas / Anotações | Escopo do Contexto | Comportamento HTTP | Detalhes de Inicialização |
+| :--- | :--- | :--- | :--- |
+| **`@WebMvcTest` + MockMvc** | **Slice da camada web** (parte específica da aplicação de forma isolada) | Sem HTTP real | Sobe apenas a camada MVC (controllers, validações, filtros e handlers). Geralmente usa mocks para os services. |
+| **`@SpringBootTest` + `@AutoConfigureMockMvc`** | **Contexto Spring completo** | Sem HTTP real | Sobe praticamente toda a aplicação. Usa MockMvc para simular requisições internamente sem abrir porta. |
+| **`@SpringBootTest(webEnvironment)` + Rest Assured** | **Contexto Spring completo** | Via HTTP real | Sobe a aplicação com servidor embutido em uma porta real. Rest Assured faz requisições reais para localhost. |
