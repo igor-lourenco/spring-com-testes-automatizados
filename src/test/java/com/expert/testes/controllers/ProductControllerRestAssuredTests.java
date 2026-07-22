@@ -71,4 +71,17 @@ public class ProductControllerRestAssuredTests {
             .body("content.name[1]", containsString(productName))
         ;
     }
+
+
+    @Test //  <findAll> deve <ConterProductDTOComPrecoEhMaiorQue2000> [quando <>]
+    public void findAllShouldContainsProductDTOWithPriceGreaterThan2000(){
+
+        RestAssured.given()
+            .get("/v1/products")
+        .then()
+            .statusCode(200)
+            .body("findAll { it.price > 2000 }.name"  // método do RestAssured que filtra todos que tem o price maior que 2000 e retorna apenas os name dos products filtrados
+                ,hasItems("MacBook Pro", "Dell XPS"))
+        ;
+    }
 }
