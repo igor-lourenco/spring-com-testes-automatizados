@@ -41,4 +41,17 @@ public class ProductControllerRestAssuredTests {
             .body("categories.name", hasItems("Home appliances"))
         ;
     }
+
+
+    @Test //  <findAllPaged> deve <RetornarProductDTO> [quando <ParamNameIsEmpty>]
+    public void findAllPagedShouldReturnProductDTOWhenParamNameIsEmpty(){
+
+        RestAssured.given()
+            .get("/v1/products/page?page=0&size=5&sort=id,ASC")
+        .then()
+            .statusCode(200)
+            .body("content.id", hasItems(1,2))
+            .body("content.name", hasItems("Microwave", "Refrigerator"))
+        ;
+    }
 }
