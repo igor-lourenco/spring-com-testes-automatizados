@@ -12,6 +12,7 @@ import static org.hamcrest.Matchers.*;
 public class ProductControllerRestAssuredTests {
 
     private long existingId, nonExistingId;
+    private String productName;
 
 
     @BeforeEach // Preparação antes de cada teste da classe
@@ -21,6 +22,7 @@ public class ProductControllerRestAssuredTests {
         baseURI = "http://localhost:9200";
         port = 9200;
         existingId = 1L;
+        productName = "Ma";
 
     }
 
@@ -52,6 +54,21 @@ public class ProductControllerRestAssuredTests {
             .statusCode(200)
             .body("content.id", hasItems(1,2))
             .body("content.name", hasItems("Microwave", "Refrigerator"))
+        ;
+    }
+
+
+    @Test //  <findAllPagedProductProjection> deve <RetornarProductDTO> [quando <ParamNameNaoEhEmpty>]
+    public void findAllPagedProductProjectionShouldReturnProductDTOWhenParamNameIsDoesNotEmpty(){
+
+        RestAssured.given()
+            .get("/v1/products/page/projections?page=0&name={productName}&size=5&sort=id,ASC", productName)
+        .then()
+            .statusCode(200)
+            .body("content.id[0]", is(4))
+            .body("content.id[1]", is(13))
+            .body("content.name[0]", containsString(productName))
+            .body("content.name[1]", containsString(productName))
         ;
     }
 }
