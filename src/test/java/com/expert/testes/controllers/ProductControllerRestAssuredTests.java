@@ -1,8 +1,12 @@
 package com.expert.testes.controllers;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 
 import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.port;
@@ -95,6 +99,37 @@ public class ProductControllerRestAssuredTests {
             .statusCode(200)
             .body("content.findAll { it.price > 1000 }.name"  // método do RestAssured que filtra todos que tem o price maior que 2000 e retorna apenas os name dos products filtrados
                 ,hasItems("Refrigerator", "Washing Machine"))
+        ;
+    }
+
+
+    @Test //  <insert> deve <RetornarProductCriado> [quando <gi>]
+    public void insertShouldReturnProductCreatedWhenLoggedInAsAdmin() throws Exception{
+
+        String token = "eyJraWQiOiJhNmQ3NTU5ZS00NTkwLTRkM2MtYTU2Ny00NDNhYjllNDBiMmQiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJteWNsaWVudGlkIiwiYXVkIjoibXljbGllbnRpZCIsInVzZXJfZW1haWwiOiJtYXJpYUBnbWFpbC5jb20iLCJuYmYiOjE3ODQ3NDA2MjUsInVzZXJfaWQiOiIyIiwic2NvcGUiOlsiUkVBRCIsIldSSVRFIl0sImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6OTIwMCIsImV4cCI6MTc4NDc0MjQyNSwiaWF0IjoxNzg0NzQwNjI1LCJqdGkiOiIxZTQ5NWNlYS1lNTFkLTRmZGQtYTU5Ni1iMzhjY2Q1OTUxNTkiLCJhdXRob3JpdGllcyI6WyJST0xFX09QRVJBVE9SIiwiUk9MRV9BRE1JTiJdfQ.CmbsNYxB-_yzLNg7uapipFx6p23CZcu4RGwmRpzJz1_T_84o5HUeV4XEiuXnHfOpk3C1HAZUXOrR41HVaoKpFdMNJyhLzmSvVjTlneJD6efohxZh4Bi711S4rXykFsRG60WHoTy0eWPTvl79kQAHPYkM8pT2aQmECaxIywAv5jQlNu8qjsZhbGS18cp06WOmJDnAnBerDH5Qn9AbcKuVwTKa4yspt_WMafNY49cIe3m5NNK45_q-Qfts_JAhsR9D_cJKDABxPYOPPVZpi54ISYD36emf1ETYsLqwLQyoUjKbjQlWv0gBmqfwDNSHSLRY53dGr0WGpHyJ7U9osiNTYg";
+        JSONObject newProduct = new JSONObject()
+            .put("name", "Desktop PC Pro")
+            .put("description", "High-end gaming desktop with RTX GPU")
+            .put("price", 8500.0)
+            .put("imgUrl", "https://example.com")
+            .put("categories", new JSONArray()
+                .put(new JSONObject()
+                    .put("id", 10))
+                .put(new JSONObject()
+                    .put("id", 8))
+            );
+
+        RestAssured.given()
+            .header("Content-type", MediaType.APPLICATION_JSON)
+            .header("Authorization", "Bearer " + token)
+            .body(newProduct.toString())
+            .contentType(ContentType.JSON)
+            .accept(ContentType.JSON)
+        .when()
+            .post("/v1/products")
+        .then()
+            .statusCode(201)
+            .body("name", equalTo(newProduct.getString("name")))
         ;
     }
 }
