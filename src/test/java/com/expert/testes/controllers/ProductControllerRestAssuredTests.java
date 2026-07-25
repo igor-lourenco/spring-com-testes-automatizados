@@ -1,5 +1,6 @@
 package com.expert.testes.controllers;
 
+import com.expert.testes.utils.TokenUtil;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.json.JSONArray;
@@ -16,6 +17,7 @@ import static org.hamcrest.Matchers.*;
 public class ProductControllerRestAssuredTests {
 
     private long existingId, nonExistingId;
+    private String adminUsername, adminPassword;
     private String productName;
 
 
@@ -27,6 +29,9 @@ public class ProductControllerRestAssuredTests {
         port = 9200;
         existingId = 1L;
         productName = "Ma";
+
+        adminUsername = "maria@gmail.com"; // perfil de admin
+        adminPassword = "maria123";
 
     }
 
@@ -103,10 +108,11 @@ public class ProductControllerRestAssuredTests {
     }
 
 
-    @Test //  <insert> deve <RetornarProductCriado> [quando <gi>]
+    @Test //  <insert> deve <RetornarProductCriado> [quando <LogadoComoAdmin>]
     public void insertShouldReturnProductCreatedWhenLoggedInAsAdmin() throws Exception{
 
-        String token = "eyJraWQiOiJhNmQ3NTU5ZS00NTkwLTRkM2MtYTU2Ny00NDNhYjllNDBiMmQiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJteWNsaWVudGlkIiwiYXVkIjoibXljbGllbnRpZCIsInVzZXJfZW1haWwiOiJtYXJpYUBnbWFpbC5jb20iLCJuYmYiOjE3ODQ3NDA2MjUsInVzZXJfaWQiOiIyIiwic2NvcGUiOlsiUkVBRCIsIldSSVRFIl0sImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6OTIwMCIsImV4cCI6MTc4NDc0MjQyNSwiaWF0IjoxNzg0NzQwNjI1LCJqdGkiOiIxZTQ5NWNlYS1lNTFkLTRmZGQtYTU5Ni1iMzhjY2Q1OTUxNTkiLCJhdXRob3JpdGllcyI6WyJST0xFX09QRVJBVE9SIiwiUk9MRV9BRE1JTiJdfQ.CmbsNYxB-_yzLNg7uapipFx6p23CZcu4RGwmRpzJz1_T_84o5HUeV4XEiuXnHfOpk3C1HAZUXOrR41HVaoKpFdMNJyhLzmSvVjTlneJD6efohxZh4Bi711S4rXykFsRG60WHoTy0eWPTvl79kQAHPYkM8pT2aQmECaxIywAv5jQlNu8qjsZhbGS18cp06WOmJDnAnBerDH5Qn9AbcKuVwTKa4yspt_WMafNY49cIe3m5NNK45_q-Qfts_JAhsR9D_cJKDABxPYOPPVZpi54ISYD36emf1ETYsLqwLQyoUjKbjQlWv0gBmqfwDNSHSLRY53dGr0WGpHyJ7U9osiNTYg";
+        String token = TokenUtil.obtainAccessToken(adminUsername, adminPassword);
+
         JSONObject newProduct = new JSONObject()
             .put("name", "Desktop PC Pro")
             .put("description", "High-end gaming desktop with RTX GPU")
@@ -130,6 +136,7 @@ public class ProductControllerRestAssuredTests {
         .then()
             .statusCode(201)
             .body("name", equalTo(newProduct.getString("name")))
+            .body("categories.id", hasItems(10, 8))
         ;
     }
 }
