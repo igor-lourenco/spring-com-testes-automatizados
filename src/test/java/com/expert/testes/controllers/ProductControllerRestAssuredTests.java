@@ -179,8 +179,8 @@ public class ProductControllerRestAssuredTests {
         String token = TokenUtil.obtainAccessToken(adminUsername, adminPassword);
 
         JSONObject newProduct = new JSONObject()
-            .put("name", "Desktop PC Pro") // Campo 'name' deve ter entre 5 e 60 caracteres
-            .put("description", "")
+            .put("name", "Desktop PC Pro")
+            .put("description", "") // Campo 'description' obrigatório
             .put("price", 8500.0)
             .put("imgUrl", "https://example.com")
             .put("categories", new JSONArray()
@@ -201,6 +201,38 @@ public class ProductControllerRestAssuredTests {
         .then()
             .statusCode(422)
             .body("errors.message[0]", equalTo("Campo 'description' obrigatório"))
+        ;
+    }
+
+    /* Inserção de produto retorna 422 e mensagem customizada com dados inválidos quando logado como admin e campo 'price' for negativo  */
+    @Test //  <insert> deve <RetornarStatusCode422> [quando <LogadoComoAdminEPriceNegativo>]
+    public void insertShouldReturnStatusCode422WhenLoggedInAsAdminAndNegativePrice() throws Exception{
+
+        String token = TokenUtil.obtainAccessToken(adminUsername, adminPassword);
+
+        JSONObject newProduct = new JSONObject()
+            .put("name", "Desktop PC Pro")
+            .put("description", "High-end gaming desktop with RTX GPU")
+            .put("price", -8500.0) // O campo 'price' deve ser positivo
+            .put("imgUrl", "https://example.com")
+            .put("categories", new JSONArray()
+                .put(new JSONObject()
+                    .put("id", 10))
+                .put(new JSONObject()
+                    .put("id", 8))
+            );
+
+        RestAssured.given()
+            .header("Content-type", MediaType.APPLICATION_JSON)
+            .header("Authorization", "Bearer " + token)
+            .body(newProduct.toString())
+            .contentType(ContentType.JSON)
+            .accept(ContentType.JSON)
+        .when()
+            .post("/v1/products")
+        .then()
+            .statusCode(422)
+            .body("errors.message[0]", equalTo("O campo 'price' deve ser positivo"))
         ;
     }
 }
