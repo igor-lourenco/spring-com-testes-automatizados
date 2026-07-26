@@ -271,4 +271,36 @@ public class ProductControllerRestAssuredTests {
         ;
     }
 
+
+
+    /* Inserção de produto retorna 401 quando token inválido  */
+    @Test //  <insert> deve <RetornarStatusCode401> [quando <TokenInvalido>]
+    public void insertShouldReturnStatusCode401WhenInvalidToken() throws Exception{
+
+        String token = "token inválido";
+
+        JSONObject newProduct = new JSONObject()
+            .put("name", "Desktop PC Pro")
+            .put("description", "High-end gaming desktop with RTX GPU")
+            .put("price", 8500.0)
+            .put("imgUrl", "https://example.com")
+            .put("categories", new JSONArray()
+                .put(new JSONObject()
+                    .put("id", 10))
+                .put(new JSONObject()
+                    .put("id", 8))
+            );
+
+        RestAssured.given()
+            .header("Content-type", MediaType.APPLICATION_JSON)
+            .header("Authorization", "Bearer " + token)
+            .body(newProduct.toString())
+            .contentType(ContentType.JSON)
+            .accept(ContentType.JSON)
+            .when()
+            .post("/v1/products")
+            .then()
+            .statusCode(401)
+        ;
+    }
 }
