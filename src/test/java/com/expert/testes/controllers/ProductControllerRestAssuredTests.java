@@ -18,6 +18,7 @@ public class ProductControllerRestAssuredTests {
 
     private long existingId, nonExistingId;
     private String adminUsername, adminPassword;
+    private String operatorUsername, operatorPassword;
     private String productName;
 
 
@@ -32,6 +33,9 @@ public class ProductControllerRestAssuredTests {
 
         adminUsername = "maria@gmail.com"; // perfil de admin
         adminPassword = "maria123";
+
+        operatorUsername = "alex@gmail.com"; // perfil de operator
+        operatorPassword = "alex123";
 
     }
 
@@ -235,4 +239,36 @@ public class ProductControllerRestAssuredTests {
             .body("errors.message[0]", equalTo("O campo 'price' deve ser positivo"))
         ;
     }
+
+    /* Inserção de produto retorna 403 quando logado como operador  */
+    @Test //  <insert> deve <RetornarStatusCode403> [quando <LogadoComoOperator>]
+    public void insertShouldReturnStatusCode403WhenLoggedInAsOperator() throws Exception{
+
+        String token = TokenUtil.obtainAccessToken(operatorUsername, operatorPassword);
+
+        JSONObject newProduct = new JSONObject()
+            .put("name", "Desktop PC Pro")
+            .put("description", "High-end gaming desktop with RTX GPU")
+            .put("price", 8500.0)
+            .put("imgUrl", "https://example.com")
+            .put("categories", new JSONArray()
+                .put(new JSONObject()
+                    .put("id", 10))
+                .put(new JSONObject()
+                    .put("id", 8))
+            );
+
+        RestAssured.given()
+            .header("Content-type", MediaType.APPLICATION_JSON)
+            .header("Authorization", "Bearer " + token)
+            .body(newProduct.toString())
+            .contentType(ContentType.JSON)
+            .accept(ContentType.JSON)
+        .when()
+            .post("/v1/products")
+        .then()
+            .statusCode(403)
+        ;
+    }
+
 }
