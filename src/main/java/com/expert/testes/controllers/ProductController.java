@@ -110,7 +110,7 @@ public class ProductController {
     }
 
 
-    @PreAuthorize(value = "hasAnyRole('ROLE_ADMIN', 'ROLE_OPERATOR')")
+    @PreAuthorize(value = "hasAnyRole('ROLE_ADMIN')")
     @DeleteMapping(value = "{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {

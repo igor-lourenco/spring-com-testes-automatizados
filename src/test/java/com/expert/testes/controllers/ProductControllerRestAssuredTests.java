@@ -111,7 +111,7 @@ public class ProductControllerRestAssuredTests {
         ;
     }
 
-
+    /* Inserção de produto quando logado como admin*/
     @Test //  <insert> deve <RetornarProductCriado> [quando <LogadoComoAdmin>]
     public void insertShouldReturnProductCreatedWhenLoggedInAsAdmin() throws Exception{
 
@@ -272,7 +272,6 @@ public class ProductControllerRestAssuredTests {
     }
 
 
-
     /* Inserção de produto retorna 401 quando token inválido  */
     @Test //  <insert> deve <RetornarStatusCode401> [quando <TokenInvalido>]
     public void insertShouldReturnStatusCode401WhenInvalidToken() throws Exception{
@@ -303,4 +302,25 @@ public class ProductControllerRestAssuredTests {
             .statusCode(401)
         ;
     }
+
+
+    /* Deleção de produto deleta produto existente quando logado como admin */
+    @Test //  <delete> deve <RetornarStatusCode204> [quando <IdExistenteELogadoComoAdmin>]
+    public void deleteShouldReturnStatusCode204WhenExistsIdAndLoggedInAsAdmin() throws Exception{
+
+        String existingId = "50";
+        String token = TokenUtil.obtainAccessToken(adminUsername, adminPassword);
+
+        RestAssured.given()
+            .header("Content-type", MediaType.APPLICATION_JSON)
+            .header("Authorization", "Bearer " + token)
+        .when()
+            .delete("/v1/products/{id}", existingId)
+        .then()
+            .statusCode(204)
+        ;
+    }
+
+
+
 }
