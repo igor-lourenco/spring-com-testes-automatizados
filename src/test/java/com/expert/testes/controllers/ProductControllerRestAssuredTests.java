@@ -322,5 +322,24 @@ public class ProductControllerRestAssuredTests {
     }
 
 
+    /* Deleção de produto retorna 404 para produto inexistente quando logado como admin */
+    @Test //  <delete> deve <RetornarStatusCode404> [quando <IdNaoExistenteELogadoComoAdmin>]
+    public void deleteShouldReturnStatusCode404WhenDoesNotExistsIdAndLoggedInAsAdmin() throws Exception{
+
+        String idNotExisting = "100";
+        String token = TokenUtil.obtainAccessToken(adminUsername, adminPassword);
+
+        RestAssured.given()
+            .header("Content-type", MediaType.APPLICATION_JSON)
+            .header("Authorization", "Bearer " + token)
+            .when()
+            .delete("/v1/products/{id}", idNotExisting)
+            .then()
+            .statusCode(404)
+            .body("error", equalTo("Recurso não encontrado"))
+            .body("message", equalTo("Product não encontrado: " + idNotExisting))
+
+        ;
+    }
 
 }
