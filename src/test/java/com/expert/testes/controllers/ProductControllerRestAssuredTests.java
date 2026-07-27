@@ -359,4 +359,21 @@ public class ProductControllerRestAssuredTests {
             .statusCode(403)
         ;
     }
+
+    /* Deleção de produto retorna 401 quando token for inválido*/
+    @Test //  <delete> deve <RetornarStatusCode401> [quando <TokenInvalido>]
+    public void deleteShouldReturnStatusCode401WhenInvalidToken() throws Exception{
+
+        String existingId = "100";
+        String token = "Token inválido";
+
+        RestAssured.given()
+            .header("Content-type", MediaType.APPLICATION_JSON)
+            .header("Authorization", "Bearer " + token)
+            .when()
+            .delete("/v1/products/{id}", existingId)
+            .then()
+            .statusCode(401)
+        ;
+    }
 }
