@@ -342,4 +342,21 @@ public class ProductControllerRestAssuredTests {
         ;
     }
 
+
+    /* Deleção de produto retorna 403 quando logado como operator */
+    @Test //  <delete> deve <RetornarStatusCode403> [quando <IdExistenteELogadoComoOperator>]
+    public void deleteShouldReturnStatusCode403WhenExistsIdAndLoggedInAsOperator() throws Exception{
+
+        String existingId = "100";
+        String token = TokenUtil.obtainAccessToken(operatorUsername, operatorPassword);
+
+        RestAssured.given()
+            .header("Content-type", MediaType.APPLICATION_JSON)
+            .header("Authorization", "Bearer " + token)
+            .when()
+            .delete("/v1/products/{id}", existingId)
+            .then()
+            .statusCode(403)
+        ;
+    }
 }
