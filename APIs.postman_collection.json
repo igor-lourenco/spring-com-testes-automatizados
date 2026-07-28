@@ -1,0 +1,1230 @@
+{
+  "info": {
+    "_postman_id": "e8fc2861-8fef-48ad-ad37-ddb94a8149a8",
+    "name": "APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "12598061"
+  },
+  "item": [
+    {
+      "name": "Category",
+      "item": [
+        {
+          "name": "Find All",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9200/v1/categories",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "v1",
+                "categories"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Find By Id",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9200/v1/categories/14",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "v1",
+                "categories",
+                "14"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Insert",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    // \"id\": 1,\r\n    \"name\": \"Smartphones\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:9200/v1/categories",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "v1",
+                "categories"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    // \"id\": 1,\r\n    \"name\": \"Smartphones teste\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:9200/v1/categories/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "v1",
+                "categories",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9200/v1/categories/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "v1",
+                "categories",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Find All Paged",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9200/v1/categories/page?page=4&size=2&sort=name,ASC",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "v1",
+                "categories",
+                "page"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "4",
+                  "type": "text"
+                },
+                {
+                  "key": "size",
+                  "value": "2",
+                  "type": "text"
+                },
+                {
+                  "key": "sort",
+                  "value": "name,ASC",
+                  "type": "text"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Product",
+      "item": [
+        {
+          "name": "Find All",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJraWQiOiIzZDJhZDM1NC04ZTlE4LTQ3ZGYtYTE2YS03MDk4YWEwNzcwN2MiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJteWNsaWVudGlkIiwiYXVkIjoibXljbGllbnRpZCIsInVzZXJfZW1haWwiOiJtYXJpYUBnbWFpbC5jb20iLCJuYmYiOjE3ODExODk3MDcsInVzZXJfaWQiOiIyIiwic2NvcGUiOlsiUkVBRCIsIldSSVRFIl0sImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6OTIwMCIsImV4cCI6MTc4MTE5MTUwNywiaWF0IjoxNzgxMTg5NzA3LCJqdGkiOiJjNzcyNGNhMy03MzIxLTQ2MjAtODE0Zi1iZTI1ZjE2OGQ0NDkiLCJhdXRob3JpdGllcyI6WyJST0xFX09QRVJBVE9SIiwiUk9MRV9BRE1JTiJdfQ.W5Cqv7MhdOifH8tetva6GdjbC_ajHDld2T63mqUx3LMNCgW7k7DJQRyrfdtEEc04FQPJruDVJRGPvTCdclZ50QfYTP7HFDi80nk03qR_zLsMTEjQHOVYOpMg5k-NYEb-d9X-yFgjWxBqL7QgGLa-fEh4rYxfKXbmd6d-NzSI5Lw-8OGoukEF22cQXVcDQgjE1JrUgxoWWtoLx2p8lAE1n5sBQy3oTFLDjPm2233kzEEocxj-dyjQjIZBXxttfF2anqYwmF3X1S9DFjJ06RUse-yFRCDIcZlYnn8_9siT8VGPHh9euNx6ZhX2ugHtOdFmZOkNFiiqdqo9meZb7vNo0w",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9200/v1/products",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "v1",
+                "products"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Find By Id",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9200/v1/products/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "v1",
+                "products",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Insert",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJraWQiOiI2NTY2ZGNkZC1lMWRmLTRlZmItODFjZC05YTRhYmVkNGNmZmMiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJteWNsaWVudGlkIiwiYXVkIjoibXljbGllbnRpZCIsInVzZXJfZW1haWwiOiJhbGV4QGdtYWlsLmNvbSIsIm5iZiI6MTc4MTI3MTY1NCwidXNlcl9pZCI6IjEiLCJzY29wZSI6WyJSRUFEIiwiV1JJVEUiXSwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo5MjAwIiwiZXhwIjoxNzgxMjczNDU0LCJpYXQiOjE3ODEyNzE2NTQsImp0aSI6ImVjOTdmOTZiLTlhZTQtNDdlZi1hM2UzLTk1OGI0MjhhNDkyNSIsImF1dGhvcml0aWVzIjpbIlJPTEVfT1BFUkFUT1IiXX0.Xwx1Am6NNfhWhSeTdMvYLztYgOLd7wIVN6j0QaVivddlHuJ6gMU00RXiYplEtk2aBXIipAaNeoG6WEyksTu4sRxx6nF9I9l2Gw_qhDGaFC5qDVnXvltzGsb8Va34jSW9VIrcdTHFg3jwyDgnsIhM4261lHaqvKSJdHBWbnWDxLFIB2irN2OreIGcJqDEA3N9lfMS9iGZ4LOEVusNMaRGj9rp-Gtbpx_fJ4Xje3Ty8YCVRpplg8FzrvQA7fhseBMrOJd8ShhJn150Z-DulZYig-xwwdyM7Av8cTVFhfoC-LURkgBf80V1T6fcQUXIUqP-oEg6mpz7ETib5TVZGfV5Lw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    // \"id\": 51,\r\n    \"name\": \"Desktop PC Pro\",\r\n    \"description\": \"High-end gaming desktop with RTX GPU\",\r\n    \"price\": 8500.00,\r\n    \"imgUrl\": \"https://example.com/images/products/desktop-pc-pro.png\",\r\n    \"categories\": [\r\n    //     {\r\n    //         \"id\": 10\r\n    //     },\r\n        {\r\n            \"id\": 8\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:9200/v1/products",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "v1",
+                "products"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    // \"id\": 51,\r\n    \"name\": \"Desktop PC Pro Teste\",\r\n    \"description\": \"High-end gaming desktop with RTX GPU\",\r\n    \"price\": 8500.00,\r\n    \"imgUrl\": \"https://example.com/images/products/desktop-pc-pro.png\",\r\n    \"categories\": [\r\n        {\r\n            \"id\": 10\r\n        },\r\n        {\r\n            \"id\": 9\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:9200/v1/products/52",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "v1",
+                "products",
+                "52"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9200/v1/products/52",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "v1",
+                "products",
+                "52"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Find All  Paged",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9200/v1/products/page?page=0&size=5&sort=name,ASC",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "v1",
+                "products",
+                "page"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "5"
+                },
+                {
+                  "key": "sort",
+                  "value": "name,ASC"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Find All  Paged (com caso de uso)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9200/v1/products/page/projections?name=&categoryId=1&page=0&size=5&sort=id,asc",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "v1",
+                "products",
+                "page",
+                "projections"
+              ],
+              "query": [
+                {
+                  "key": "name",
+                  "value": ""
+                },
+                {
+                  "key": "categoryId",
+                  "value": "1"
+                },
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "5"
+                },
+                {
+                  "key": "sort",
+                  "value": "id,asc"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Find All",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJraWQiOiI2NTY2ZGNkZC1lMWRmLTRlZmItODFjZC05YTRhYmVkNGNmZmMiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJteWNsaWVudGlkIiwiYXVkIjoibXljbGllbnRpZCIsInVzZXJfZW1haWwiOiJtYXJpYUBnbWFpbC5jb20iLCJuYmYiOjE3ODEyNzE3MjMsInVzZXJfaWQiOiIyIiwic2NvcGUiOlsiUkVBRCIsIldSSVRFIl0sImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6OTIwMCIsImV4cCI6MTc4MTI3MzUyMywiaWF0IjoxNzgxMjcxNzIzLCJqdGkiOiIyOGViZDc0ZC1kNzkxLTQ3OGUtOTNkMC0xNzQ1NjFjMDE2NWEiLCJhdXRob3JpdGllcyI6WyJST0xFX09QRVJBVE9SIiwiUk9MRV9BRE1JTiJdfQ.sTUBgmoE4HHjE3W4sBA-gLqmrZqVCOoJt7ZAftIo4_SLfC4KvvrYaeN2wHnaaKXuhzZ2b4hwQb7gpGXcdYQUCfIIHSia_ZW1esJZ5u2WiLh9aqowHmTsLGKfjIMOPn0xGBh0bkgiqOhB2WY97MpnCKj6ZqpYOB1C0RYS_BbgZqV3VoV85q6GbZHeOnfwvS2zuFVG1LrSA3Gz1as5yosQhik9dYzveKIVcpF7z6qkxgin1SR2rkCeG0SAMEKxwABaD-ZGnjRCQ0KsxIGjvIq9nio25l8VB_DN3rY6kL8chf1218HIpOLPrka42hwN1Py4h2egUyJG-O-LUouZhBRhNg",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9200/v1/users",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "v1",
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Find By Id",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Origin",
+                "value": " http://localhost:9200",
+                "description": "Apeans para testar o CORS",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "http://localhost:9200/v1/users/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "v1",
+                "users",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Insert",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\r\n    \"firstName\": \"Bob\",\r\n    \"lastName\": \"Brown\",\r\n    \"email\": \"bob@gmail.com\",\r\n    \"password\" : \"bob123456\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": 2,\r\n            \"authority\": \"ROLE_ADMIN\" // serve vai salvar com perfil ROLE_OPERATOR\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:9200/v1/users",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "v1",
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJraWQiOiI0NTc4ODRlMC1hMmZlLTQyZDctYjRjYS1iMTZlYTJlYTNhNDAiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJteWNsaWVudGlkIiwiYXVkIjoibXljbGllbnRpZCIsInVzZXJfZW1haWwiOiJtYXJpYUBnbWFpbC5jb20iLCJuYmYiOjE3ODEyNzIwOTIsInVzZXJfaWQiOiIyIiwic2NvcGUiOlsiUkVBRCIsIldSSVRFIl0sImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6OTIwMCIsImV4cCI6MTc4MTI3Mzg5MiwiaWF0IjoxNzgxMjcyMDkyLCJqdGkiOiJiMzc1ZTJkMS04NTIwLTQ0MzktODQ3Ni1kYjBmZTU0MTIxMjkiLCJhdXRob3JpdGllcyI6WyJST0xFX09QRVJBVE9SIiwiUk9MRV9BRE1JTiJdfQ.Sf_lFhNOFmDUKIVHXhggta1BSTeYwios5x9Q3k072I-i2kuu70DMon_luwfh4R6T1utI8jSKyO88aFN7IVpz2U1Jrfo4eknytPT2E_Xsd1j5-9f1aJ0SVAP3o01vozhqkR4leUFMm54RneG0oTgTLHq9Exo36aH6ZjU2d3zpOmipG6ocm3s09all8NhKZ4ZnoWTKgj4LTNC7_mNlNOiRHSMl0fI1wM9a75alQzj7mtj1taEOAWvYtYs8zXWO6_dImSkQRbrQ4C6E1NvpYYp64YfGeeI013-YP0lPzefCRHRz2yAecJt0m5q6SeeNNM82X7Dbb1tLATCnXWQhUHNgEw",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n\r\n    \"firstName\": \"Bob Teste\",\r\n    \"lastName\": \"Brown\",\r\n    \"email\": \"alex2@gmail.com\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": 1,\r\n            \"authority\": \"ROLE_OPERATOR\"\r\n        }\r\n    ]\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:9200/v1/users/3",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "v1",
+                "users",
+                "3"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9200/v1/users/5",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "v1",
+                "users",
+                "5"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Find All Paged",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:9200/v1/users/page?page=0&size=5&sort=firstName,Desc",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "v1",
+                "users",
+                "page"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0"
+                },
+                {
+                  "key": "size",
+                  "value": "5"
+                },
+                {
+                  "key": "sort",
+                  "value": "firstName,Desc"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Token JWT",
+      "item": [
+        {
+          "name": "Fluxo Client Credentials",
+          "item": [
+            {
+              "name": "CLIENT_SECRET_BASIC",
+              "item": [
+                {
+                  "name": "Passo 0 - Solicita token",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "password",
+                          "value": "myclientsecret",
+                          "type": "string"
+                        },
+                        {
+                          "key": "username",
+                          "value": "myclientid",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Basic YWxnYWZvb2Qtd2ViLWNsaWVudC1jcmVkZW50aWFscy10b2tlbi1qd3Q6d2ViMTIz",
+                        "type": "text"
+                      },
+                      {
+                        "key": "username",
+                        "value": "maria@gmail.com",
+                        "type": "text"
+                      },
+                      {
+                        "key": "password",
+                        "value": "maria123",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "urlencoded",
+                      "urlencoded": [
+                        {
+                          "key": "grant_type",
+                          "value": "client_credentials",
+                          "type": "text"
+                        },
+                        {
+                          "key": "scope",
+                          "value": "READ WRITE",
+                          "type": "text"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "http://localhost:9200/oauth2/token",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "9200",
+                      "path": [
+                        "oauth2",
+                        "token"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Passo 1 - Inspeciona token",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "password",
+                          "value": "myclientsecret",
+                          "type": "string"
+                        },
+                        {
+                          "key": "username",
+                          "value": "myclientid",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Basic YWxnYWZvb2Qtd2ViLWNsaWVudC1jcmVkZW50aWFscy10b2tlbi1qd3Q6d2ViMTIz",
+                        "disabled": true
+                      },
+                      {
+                        "key": "Cookie",
+                        "value": "JSESSIONID=AB0CD74602FA2B757C0ADC8CF08E7B8A; JSESSIONID=6FA638F3DEB6A81F06A2BC6D121BDED9",
+                        "disabled": true
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "type": "text",
+                          "key": "token",
+                          "value": "eyJraWQiOiI3OTc5ZGQzNi0xZWJjLTRiOGYtYjAyZC1jYWUyM2U1OGNkOTciLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJteWNsaWVudGlkIiwiYXVkIjoibXljbGllbnRpZCIsInVzZXJfZW1haWwiOiJtYXJpYUBnbWFpbC5jb20iLCJuYmYiOjE3ODExMDU3NjMsInVzZXJfaWQiOiIyIiwic2NvcGUiOlsiUkVBRCIsIldSSVRFIl0sImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6OTIwMCIsImV4cCI6MTc4MTEwNzU2MywiaWF0IjoxNzgxMTA1NzYzLCJqdGkiOiJmZjNiZjc2OS1lM2E5LTQwYWQtOWYxYS1jNGVkZDQxMDVjZjgiLCJhdXRob3JpdGllcyI6WyJST0xFX09QRVJBVE9SIiwiUk9MRV9BRE1JTiJdfQ.Fv9bcdX9VYsDz9cyjHXyxAcEttsBNh3i9yLdYbEBSIrejfHoI87ywl4SPaFTAjzHrb8PsCHgK6T4Ve5QavIhiSzAOIDhFEDlW427AuR1OwRCLy13HgdmepY4Qtpgy2Smll5q4T9E-T8-ejhM_mROWnTluvIXYInyIPdSlhNHp3TZxGeghHpREigTbHrU5OTUlzfuOpbWi4booTz443R0WZpw_Co_7S3WFifkUINHqo2EVB-6GjflNFjoTTwSlX71flPkRfHnbnAWK_2FrWW8PbW8538RwOBSkcUW7VKwokNfRExU9GrJ-Gv2eupUA0PhZWwIGQL0hDgCNokr8szX5g"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "http://localhost:9200/oauth2/introspect",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "9200",
+                      "path": [
+                        "oauth2",
+                        "introspect"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "CLIENT_SECRET_JWT",
+              "item": [
+                {
+                  "name": "Passo 0 - Solicita token",
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/x-www-form-urlencoded",
+                        "type": "text"
+                      },
+                      {
+                        "key": "username",
+                        "value": "maria@gmail.com",
+                        "type": "text"
+                      },
+                      {
+                        "key": "password",
+                        "value": "maria123",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "urlencoded",
+                      "urlencoded": [
+                        {
+                          "key": "grant_type",
+                          "value": "client_credentials",
+                          "type": "text"
+                        },
+                        {
+                          "key": "scope",
+                          "value": "READ WRITE",
+                          "type": "text"
+                        },
+                        {
+                          "key": "client_id",
+                          "value": "myclientidsecretjwt",
+                          "type": "text",
+                          "uuid": "10b746b7-d7ec-46a6-9fb9-434b12a44c56"
+                        },
+                        {
+                          "key": "client_assertion_type",
+                          "value": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+                          "type": "text",
+                          "description": "Tipo da assertion que está em client_assertion. Para JWT Bearer, o padrão exige esse valor"
+                        },
+                        {
+                          "key": "client_assertion",
+                          "value": "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJteWNsaWVudGlkc2VjcmV0and0Iiwic3ViIjoibXljbGllbnRpZHNlY3JldGp3dCIsImF1ZCI6WyJodHRwOi8vbG9jYWxob3N0OjkyMDAvb2F1dGgyL3Rva2VuIl0sImlhdCI6MTc4MTEwNjY3MiwiZXhwIjoxNzgxMTA2OTcyLCJqdGkiOiJlMmYzM2UzNy1mYTNlLTQ2MTctOGE0Ny0xYzk0NGE1MmZkOWEifQ.GipFom_a2eJSuwOvvdYAL2hb5c3t5g4ijqa8vCxx2Lk",
+                          "type": "text",
+                          "description": "JWT assinado que o cliente envia para provar sua identidade"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "http://localhost:9200/oauth2/token",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "9200",
+                      "path": [
+                        "oauth2",
+                        "token"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Passo 1 - Inspeciona token",
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/x-www-form-urlencoded"
+                      }
+                    ],
+                    "body": {
+                      "mode": "urlencoded",
+                      "urlencoded": [
+                        {
+                          "type": "text",
+                          "key": "token",
+                          "value": "eyJraWQiOiI3OTc5ZGQzNi0xZWJjLTRiOGYtYjAyZC1jYWUyM2U1OGNkOTciLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJteWNsaWVudGlkc2VjcmV0and0IiwiYXVkIjoibXljbGllbnRpZHNlY3JldGp3dCIsInVzZXJfZW1haWwiOiJtYXJpYUBnbWFpbC5jb20iLCJuYmYiOjE3ODExMDY2ODQsInVzZXJfaWQiOiIyIiwic2NvcGUiOlsiUkVBRCIsIldSSVRFIl0sImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6OTIwMCIsImV4cCI6MTc4MTEwODQ4NCwiaWF0IjoxNzgxMTA2Njg0LCJqdGkiOiI1N2NiMzEzOC04Zjc1LTQxMDYtOGY1Mi0yYTM5MTBiNTA0ZGYiLCJhdXRob3JpdGllcyI6WyJST0xFX09QRVJBVE9SIiwiUk9MRV9BRE1JTiJdfQ.nU1TcTwFY2tkvF48BBRPKt0Sk7iySHMcxs71Cp4lw1gZfzGm8DPmmlM-l8kLsy3MDE4Ahp_hV-An8CwI-KpssPX88hFk2cgE2Ol0WrqKXpflUuKDa5ZC6URo7LnjxBom_iqegD8h_zsRpTHx9hi1UQ6TGrQ07rWzP0aAdpDX8GrfAx0On7acNr72MFThpd3_SFpzDCmbFoUOnPnf9yv4Gw72_Q6Xqp7ldCQd1eMQ-J8_pESZoNmsnW6ha5K7Xd-Jf9b3Fk2CigCSQb16rTwuQU-S1Ftk7wfmIzv8VFGFzj8JP93jh9nrDVrbTFJTf9OKHN1JMGDoLA2Ma11ZoSRVIA",
+                          "description": "access_token gerado pelo /oauth2/token"
+                        },
+                        {
+                          "type": "text",
+                          "key": "token_type_hint",
+                          "value": "access_token"
+                        },
+                        {
+                          "type": "text",
+                          "key": "client_id",
+                          "value": "myclientidsecretjwt"
+                        },
+                        {
+                          "type": "text",
+                          "key": "client_assertion_type",
+                          "value": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+                        },
+                        {
+                          "type": "text",
+                          "key": "client_assertion",
+                          "value": "eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJteWNsaWVudGlkc2VjcmV0and0Iiwic3ViIjoibXljbGllbnRpZHNlY3JldGp3dCIsImF1ZCI6WyJodHRwOi8vbG9jYWxob3N0OjkyMDAvb2F1dGgyL3Rva2VuIl0sImlhdCI6MTc4MTEwNjY3MiwiZXhwIjoxNzgxMTA2OTcyLCJqdGkiOiJlMmYzM2UzNy1mYTNlLTQ2MTctOGE0Ny0xYzk0NGE1MmZkOWEifQ.GipFom_a2eJSuwOvvdYAL2hb5c3t5g4ijqa8vCxx2Lk",
+                          "description": "O mesmo JWT assinado que o cliente envia para provar sua identidade"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "http://localhost:9200/oauth2/introspect",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "9200",
+                      "path": [
+                        "oauth2",
+                        "introspect"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "PRIVATE_KEY_JWT",
+              "item": [
+                {
+                  "name": "Passo 0 - Solicita token",
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/x-www-form-urlencoded",
+                        "type": "text"
+                      },
+                      {
+                        "key": "username",
+                        "value": "maria@gmail.com",
+                        "type": "text"
+                      },
+                      {
+                        "key": "password",
+                        "value": "maria123",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "urlencoded",
+                      "urlencoded": [
+                        {
+                          "key": "scope",
+                          "value": "READ WRITE",
+                          "type": "text",
+                          "uuid": "7f560d76-8f77-40f3-9c3f-a0e915c551ba"
+                        },
+                        {
+                          "type": "text",
+                          "key": "grant_type",
+                          "value": "client_credentials"
+                        },
+                        {
+                          "type": "text",
+                          "key": "client_id",
+                          "value": "myclientidprivatekey"
+                        },
+                        {
+                          "type": "text",
+                          "key": "client_assertion_type",
+                          "value": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+                          "description": "Tipo da assertion que está em client_assertion. Para JWT Bearer, o padrão exige esse valor"
+                        },
+                        {
+                          "type": "text",
+                          "key": "client_assertion",
+                          "value": "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJteWNsaWVudGlkcHJpdmF0ZWtleSIsInN1YiI6Im15Y2xpZW50aWRwcml2YXRla2V5IiwiYXVkIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTIwMC9vYXV0aDIvdG9rZW4iXSwiaWF0IjoxNzgxMTIwOTMzLCJleHAiOjE3ODExMjEyMzMsImp0aSI6IjQyYTZmN2I3LTQzZmItNDYyMy1hY2QxLTY1NjAxZjVkNDM4NiJ9.BHUlYPEBxZeziownBXaJj4637oqEeDF24yXijM6yIuqWYXdESgE4OGfzLi377WguSFLPftqcfNPziiPpRs5Iva_ANVC5Gv3pI2mIKchiY8uab86z_RKYi3qRbU13bz6tJjg1nVJPG5E4uup1sSeElk-zHOpDH7pvyaSrybkqappf4wWVN_t26Csy-thWQTsrPg2U8UJZdyy-E54-uDquM-zCZW8y_vHtsHhNQrsOQKalDR6uoEkxKUUmKAkVfceH_uB2nYL7SfSYWda91zpRpkEmGV_JKAj0JbGE4pObLmqojFSbFh8CLokcMQjw6U0jPu5vHF9RvySRmUjPxnNUlw",
+                          "description": "JWT assinado com chave privada que o cliente envia para provar sua identidade"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "http://localhost:9200/oauth2/token",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "9200",
+                      "path": [
+                        "oauth2",
+                        "token"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Passo 1 - Inspeciona token",
+                  "request": {
+                    "auth": {
+                      "type": "noauth"
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/x-www-form-urlencoded"
+                      },
+                      {
+                        "key": "Cookie",
+                        "value": "JSESSIONID=6FA638F3DEB6A81F06A2BC6D121BDED9",
+                        "disabled": true
+                      }
+                    ],
+                    "body": {
+                      "mode": "urlencoded",
+                      "urlencoded": [
+                        {
+                          "type": "text",
+                          "key": "token",
+                          "value": "eyJraWQiOiIxM2RhYWVmNy03MmJjLTQyZWYtYjA0Zi1lMzhkYThiNDcxZDMiLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJteWNsaWVudGlkcHJpdmF0ZWtleSIsImF1ZCI6Im15Y2xpZW50aWRwcml2YXRla2V5IiwidXNlcl9lbWFpbCI6Im1hcmlhQGdtYWlsLmNvbSIsIm5iZiI6MTc4MTExNTA2OCwidXNlcl9pZCI6IjIiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjkyMDAiLCJleHAiOjE3ODExMTY4NjgsImlhdCI6MTc4MTExNTA2OCwianRpIjoiOWYyMWRhZDAtMzIyOC00MzMwLWJkNDktYmU2M2QwMzExMjJlIiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9PUEVSQVRPUiIsIlJPTEVfQURNSU4iXX0.aomJRcoOowXQbX9_0JH2exuUqe_KabU_SZnR9M4cGZ2WXuw-JDqzJ7hKUhslouGkr-2dg1iL5JlEiPC9s4wDVeZnI-1GG9yCQNyJ5SKWTf4eFJYbjMgb0q5zNDeLRVv03VX100T1oea3vj996REltM_yKwrEc4f0ybUz59mlK0i8P_hZnlg3PB5l_Ay8lZ_tifYC4VYSVX7e_wfLitMtmYO3w07OK8acIAsJtcGHfeyAFBMieCPCVz-zjq1w7UoUDmbqApD_PoUmu3joRZOU0V2U1FCudQgN906_ElW0ZTrTvvkPGsZtQ963q50LwKIJS3QEY7xc9dUYyiYoLNswuA",
+                          "description": "access_token gerado pelo /oauth2/token"
+                        },
+                        {
+                          "type": "text",
+                          "key": "token_type_hint",
+                          "value": "access_token"
+                        },
+                        {
+                          "type": "text",
+                          "key": "client_id",
+                          "value": "myclientidprivatekey"
+                        },
+                        {
+                          "type": "text",
+                          "key": "client_assertion_type",
+                          "value": "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+                        },
+                        {
+                          "type": "text",
+                          "key": "client_assertion",
+                          "value": "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJteWNsaWVudGlkcHJpdmF0ZWtleSIsInN1YiI6Im15Y2xpZW50aWRwcml2YXRla2V5IiwiYXVkIjpbImh0dHA6Ly9sb2NhbGhvc3Q6OTIwMC9vYXV0aDIvdG9rZW4iXSwiaWF0IjoxNzgxMTE1MDI0LCJleHAiOjE3ODExMTUzMjQsImp0aSI6IjA3ZDliNzNlLTUzODQtNDIwOC05MThlLTc2NGYxMDg5NTJiNSJ9.noymSR92dFwt2ufJWoNSugzcGXzI6WC0BAtD8vqBSHwz9zXMFyS7IaTl_RsptppYL6gB6PcsoTBHUx1QAtLJxBGLx219ofFn0Re-EHQdv6gTyjEFUzWewn6TZbAownLc8crWyVR20TDOCO4UGAgFwyDU4xdfIDjHQJXFm_rbjBTOvDnLBRc-Au3i1PA_fTijo03zUyrg6yYHUfcx5aF_7ukfbxXZ1Ahktnf6M5-f-RuKYsZ2-e8u9KkarSef-fUm6qp3VEhWV-uqeTaaRn7zW99QaM9LgGdtzfICP0qavGmPie9tTYRxJ_dUSGYkcYyL1lfPdDP3SGYrvkxWFk6GEQ",
+                          "description": "O mesmo JWT assinado que o cliente envia para provar sua identidade"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "http://localhost:9200/oauth2/introspect",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "9200",
+                      "path": [
+                        "oauth2",
+                        "introspect"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Busca chave pública",
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:9200/oauth2/jwks",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "9200",
+                  "path": [
+                    "oauth2",
+                    "jwks"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Recuperação de nova senha",
+      "item": [
+        {
+          "name": "Passo 0 - Recover Token (geração de token)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"email@gmail.com\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:9200/v1/auth/recover-token",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "v1",
+                "auth",
+                "recover-token"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Passo 1 - New Password (nova senha passando o token gerado)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"token\": \"7f0cfdeb-03fd-4e35-b779-baecd8a39727\",\r\n    \"password\" : \"abcd1234\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:9200/v1/auth/new-password",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "v1",
+                "auth",
+                "new-password"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Passo 2 - Geração do Token JWT para autenticação",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Basic bXljbGllbnRpZDpteWNsaWVudHNlY3JldA=="
+              },
+              {
+                "key": "username",
+                "value": "igor.lourencosantos@gmail.com"
+              },
+              {
+                "key": "password",
+                "value": "abcd1234"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "type": "text",
+                  "key": "grant_type",
+                  "value": "client_credentials"
+                },
+                {
+                  "type": "text",
+                  "key": "scope",
+                  "value": "READ WRITE"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:9200/oauth2/token",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "9200",
+              "path": [
+                "oauth2",
+                "token"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Envio de e-mail",
+      "item": [
+        {
+          "name": "http://localhost:8080/email",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"to\": \"email do destinatario\",\r\n    \"subject\" : \"Aviso ao cliente\",\r\n    \"body\" : \"Prezado cliente, \\n\\nAcesse agora:\\n\\nhttps://google.com\\n\\nAbraços!\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/email",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "email"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
